@@ -1,0 +1,27 @@
+from random import choice
+import pygame as pg
+from math import sqrt, pi
+
+# SCREEN SIZE
+Y_SIZE = HEIGHT = 700
+X_SIZE = WIDTH = 1000
+size = [WIDTH, HEIGHT]
+HALF_HEIGHT = HEIGHT / 2
+HALF_WIDTH = WIDTH / 2
+
+# COLORS
+BG_COLOR = 'black'
+
+# SNAKE у
+SNAKE_DEFAULT_COLOR = 'green'
+
+# FONTS
+FIRST_LINE_SPACE = 10
+NUMBER_OF_OTHER_PLAYERS = 79
+DEFAULT_FONT_SIZE = 50
+FONT_HEIGHT_SPACE = 30
+
+
+
+
+
