@@ -21,6 +21,9 @@ class Game:
 
         self.snake_world.new_game()
 
+    def control(self):
+        self.snake_world.control_by_keyboard()
+
     def draw_game(self):
         self.draw_multiline_text("""Game""")
         self.snake_world.draw(self.scr)
@@ -51,7 +54,7 @@ class Game:
 
     def one_tick(self):
         if self.state == 'game':
-            self.snake_world.try_move_snakes()
+            self.snake_world.move_snakes()
 
     def game_over(self):
         self.state = 'game over'
@@ -68,8 +71,13 @@ class Game:
 
             if self.state == 'game':
                 pos = pg.mouse.get_pos()
+                self.snake_world.control_by_keyboard(keys)
                 if keys[pg.K_r]:
                     self.new_game()
+                if keys[pg.K_y]:
+                    for snake in self.snake_world.snakes:
+                        snake.add_segment()
+
                 if keys[pg.K_q]:
                     self.state = 'main menu'
 

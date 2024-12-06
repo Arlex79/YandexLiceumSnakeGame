@@ -1,6 +1,6 @@
 from snake import *
 from time import time
-
+from random import randint
 
 class SnakeWorld:
     def __init__(self):
@@ -10,21 +10,28 @@ class SnakeWorld:
 
     def new_game(self, game_type='single'):
         self.game_type = game_type
+        self.snakes = []
         if game_type == 'single':
             self.snakes.append(Snake([SnakeBodySegment(5, 5), SnakeBodySegment(5, 6)]))
 
         else:
             assert False
 
+    def add_random_coords_snake(self):
+        x = randint(0, MAX_SNAKE_X)
+        y = randint(0, MAX_SNAKE_Y)
+    def control_by_keyboard(self, keys):
+        for snake in self.snakes:
+            snake.control(keys)
+
     def move_snakes(self):
         for snake in self.snakes:
             snake.move()
 
-    def try_move_snakes(self):
-        now_ms = time()
-        if (now_ms - self.tick_last_time) > 1:
-            self.tick_last_time = now_ms
-            self.move_snakes()
+    def move_snakes(self):
+        for snake in self.snakes:
+            snake.try_move_snake()
+
 
     def draw(self, scr):
         for snake in self.snakes:
