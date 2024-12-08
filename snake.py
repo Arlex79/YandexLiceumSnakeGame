@@ -17,10 +17,15 @@ class SnakeSkin:
 
         else:
             return self.body[index % len(self.body)]
-SNAKE_DEFAULT_SKINS = [SnakeSkin('yellow', 'red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'violet'),
-                       SnakeSkin('gray', 'white', 'blue', 'red'),
-                       SnakeSkin('red', 'yellow', 'orange', 'red'),
-                       SnakeSkin('gray', 'blue', 'cyan', 'violetq'),]
+
+
+SNAKE_DEFAULT_SKINS = {'black-white':SnakeSkin('black', *(
+                                               list((i, i, i) for i in range(70, 190, 5)) +
+                                               list((i, i, i) for i in range(190, 70, -5)))),
+                       'yellow-cyan': SnakeSkin('grey', *(
+                               list((i, i, 0) for i in range(70, 190, 10)) +
+                               list((0, i, i) for i in range(190, 70, -10))))
+                       }
 
 
 class SnakeBodySegment:
@@ -38,7 +43,12 @@ class Snake:
         self.dx = 1
         self.dy = 0
         if skin is None:
-            self.skin = choice(SNAKE_DEFAULT_SKINS)
+            if type(DEFAULT_SKIN) == str:
+                self.skin = SNAKE_DEFAULT_SKINS[DEFAULT_SKIN]
+
+            elif type(DEFAULT_SKIN) == int:
+                self.skin = list(SNAKE_DEFAULT_SKINS.values())[DEFAULT_SKIN]
+
         else:
             self.skin = skin
 
@@ -54,8 +64,10 @@ class Snake:
         del self.body[-1]
         head = self.body[0]
         self.body.insert(0, SnakeBodySegment(head.x + self.dx, head.y + self.dy))
+
     def get_move_timeout(self):
         return SNAKE_SLOWLY_MOVE_TIMEOUT
+
     def try_move_snake(self):
         now_ms = time()
 

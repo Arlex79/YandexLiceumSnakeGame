@@ -25,7 +25,7 @@ class Game:
         self.snake_world.control_by_keyboard()
 
     def draw_game(self):
-        self.draw_multiline_text("""Game""")
+        self.draw_multiline_text("""Game! Prees Y!""")
         self.snake_world.draw(self.scr)
 
     def draw_multiline_text(self, text):

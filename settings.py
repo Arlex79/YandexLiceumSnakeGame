@@ -19,6 +19,7 @@ SNAKE_SLOWLY_MOVE_TIMEOUT = 0.1
 DEFAULT_CONTROL_SCHEME = {'up': pg.K_w, 'right': pg.K_d, 'down': pg.K_s, 'left': pg.K_a}
 MAX_SNAKE_X = 8
 MAX_SNAKE_Y = 8
+DEFAULT_SKIN = 1
 
 # FONTS
 FIRST_LINE_SPACE = 10
