@@ -3,17 +3,22 @@ from snake import *
 from settings import *
 from snake_world import SnakeWorld
 from time import time
-
+from background import Background
 
 class Game:
     def __init__(self):
         pg.init()
+        self.isDrawHitbox = True
+        self.isDrawSprites = False
         self.scr = pg.display.set_mode(size)
         self.clock = pg.time.Clock()
         self.cheat = True
         self.running = True
         self.snake_world = SnakeWorld()
+        self.bg = Background()
         self.state = 'main menu'
+
+
 
     def new_game(self, game_type='single'):  # type = single / duo
         self.running = True
@@ -25,7 +30,6 @@ class Game:
         self.snake_world.control_by_keyboard()
 
     def draw_game(self):
-        self.draw_multiline_text("""Game! Prees Y!""")
         self.snake_world.draw(self.scr)
 
     def draw_multiline_text(self, text):
@@ -35,6 +39,7 @@ class Game:
 
     def draw(self):
         self.scr.fill(BG_COLOR)
+        self.bg.draw(self.scr)
         if self.state == 'game':
             self.draw_game()
 
@@ -43,7 +48,7 @@ class Game:
             self.draw_multiline_text(text)
 
         if self.state == 'main menu':
-            text = f"""=====[ MAIN MENU ]=====\n\nPrees 1 or SPACE to single play\n\nversion 0.1"""
+            text = f"""=====[ MAIN MENU ]=====\nPrees SPACE to single play\n\nversion 0.1"""
 
             self.draw_multiline_text(text)
 

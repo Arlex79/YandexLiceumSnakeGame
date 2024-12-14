@@ -19,9 +19,13 @@ class SnakeSkin:
             return self.body[index % len(self.body)]
 
 
-SNAKE_DEFAULT_SKINS = {'black-white':SnakeSkin('black', *(
-                                               list((i, i, i) for i in range(70, 190, 5)) +
-                                               list((i, i, i) for i in range(190, 70, -5)))),
+SNAKE_DEFAULT_SKINS = {'red-orange-yellow': SnakeSkin('black', *(
+        list((i, 0, 0) for i in range(70, 190, 5)) +
+        list((0, i, 0) for i in range(190, 70, 5)) +
+        list((0, 0, i) for i in range(190, 70, 5)))),
+                       'black-white': SnakeSkin('black', *(
+                               list((i, i, i) for i in range(70, 190, 5)) +
+                               list((i, i, i) for i in range(190, 70, -5)))),
                        'yellow-cyan': SnakeSkin('grey', *(
                                list((i, i, 0) for i in range(70, 190, 10)) +
                                list((0, i, i) for i in range(190, 70, -10))))
@@ -49,16 +53,28 @@ class Snake:
             elif type(DEFAULT_SKIN) == int:
                 self.skin = list(SNAKE_DEFAULT_SKINS.values())[DEFAULT_SKIN]
 
+
         else:
             self.skin = skin
 
     def draw(self, scr):
+        body = self.body[::-1]
+        for i in range(len(body)):
+            snake_body_segment = body[i]
+            x = snake_body_segment.x
+            y = snake_body_segment.y
+
+            pg.draw.rect(scr, self.skin.get_color_for_index(i),
+                             pg.Rect(SNAKE_TILE * x, SNAKE_TILE * y, SNAKE_TILE, SNAKE_TILE))
+
+    def draw_hitbox(self, scr):
         for i in range(len(self.body)):
             snake_body_segment = self.body[i]
             x = snake_body_segment.x
             y = snake_body_segment.y
-            pg.draw.rect(scr, self.skin.get_color_for_index(i),
-                         pg.Rect(SNAKE_TILE * x, SNAKE_TILE * y, SNAKE_TILE, SNAKE_TILE))
+
+            pg.draw.rect(scr, '#00FF00',
+                             pg.Rect(SNAKE_TILE * x, SNAKE_TILE * y, SNAKE_TILE, SNAKE_TILE), 1)
 
     def move(self):
         del self.body[-1]
@@ -76,22 +92,28 @@ class Snake:
             self.move()
 
     def add_segment(self, count=1):
-        self.snake_end = self.body[-1]
-        self.body.append(copy(self.snake_end))
+        for i in range(count):
+            snake_end = self.body[-1]
+            self.body.append(copy(snake_end))
 
     def control(self, keys):
+        new_dx, new_dy = None, None
         if keys[self.control_scheme['up']]:
-            self.dx = 0
-            self.dy = -1
+            new_dx = 0
+            new_dy= -1
 
         if keys[self.control_scheme['down']]:
-            self.dx = 0
-            self.dy = 1
+            new_dx = 0
+            new_dy = 1
 
         if keys[self.control_scheme['left']]:
-            self.dx = -1
-            self.dy = 0
+            new_dx = -1
+            new_dy = 0
 
         if keys[self.control_scheme['right']]:
-            self.dx = 1
-            self.dy = 0
+            new_dx= 1
+            new_dy = 0
+
+        if not new_dx is None and not new_dy is None and new_dx != self.dx * -1 and new_dy != self.dy * -1:
+            self.dx = new_dx
+            self.dy = new_dy

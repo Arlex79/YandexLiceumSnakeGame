@@ -1,12 +1,16 @@
 from snake import *
 from time import time
 from random import randint
-
+from hud import HUD
 class SnakeWorld:
     def __init__(self):
         self.snakes = []
+        self.apples = []
+        self.inGameHud = HUD()
         self.game_type = None
         self.tick_last_time = time()
+        self.isDrawHitbox = True
+        self.isDrawSprites = False
 
     def new_game(self, game_type='single'):
         self.game_type = game_type
@@ -34,5 +38,8 @@ class SnakeWorld:
 
 
     def draw(self, scr):
+
         for snake in self.snakes:
             snake.draw(scr)
+
+        self.inGameHud.draw(scr)
