@@ -15,16 +15,17 @@ class Game:
         self.cheat = True
         self.running = True
         self.snake_world = SnakeWorld()
-        self.bg = Background()
+        self.inNenuBg = Background()
         self.state = 'main menu'
-
+        self.activeGameType = 'single'
+        self.skins = [get_skin(0), get_skin(60)]
 
 
     def new_game(self, game_type='single'):  # type = single / duo
         self.running = True
         self.state = 'game'
 
-        self.snake_world.new_game()
+        self.snake_world.new_game(game_type, skins=self.skins)
 
     def control(self):
         self.snake_world.control_by_keyboard()
@@ -39,19 +40,30 @@ class Game:
 
     def draw(self):
         self.scr.fill(BG_COLOR)
-        self.bg.draw(self.scr)
+
         if self.state == 'game':
             self.draw_game()
 
         if self.state == 'game over':
-            text = "GAME OVER!\nPREES SPACE TO PLAY"
+            self.inNenuBg.draw(self.scr)
+            text = "Игра окончена!\n\nНажми Q для выхода в главное меню\nНажми пробел, чтобы играть снова"
             self.draw_multiline_text(text)
 
         if self.state == 'main menu':
-            text = f"""=====[ MAIN MENU ]=====\nPrees SPACE to single play\n\nversion 0.1"""
+            self.inNenuBg.draw(self.scr)
+            text = f"""----------< Змейка >----------\n\nНажми 1 для выбора однопользовательской игры\nНажми 2 для выбора двупользовательской игры\n
+Нажми пробел чтобы играть в режиме {self.get_russian_game_type()}!\n\nверсия 0.1"""
 
             self.draw_multiline_text(text)
+    def get_russian_game_type(self):
+        match self.activeGameType:
+            case 'single':
+                return 'однопользовательская игра'
+            case 'dual':
+                return 'двупользовательская игра'
 
+            case _:
+                return self.activeGameType
     def draw_text(self, text, x=0, y=0, color='white', size=DEFAULT_FONT_SIZE, font_type='Courier New'):
         font = pg.font.SysFont(None, size)
         img = font.render(text, True, color)
@@ -60,6 +72,8 @@ class Game:
     def one_tick(self):
         if self.state == 'game':
             self.snake_world.move_snakes()
+            self.snake_world.check_snakes_eat_apples()
+            self.snake_world.check_snakes_dead()
 
     def game_over(self):
         self.state = 'game over'
@@ -75,29 +89,45 @@ class Game:
             self.one_tick()
 
             if self.state == 'game':
-                pos = pg.mouse.get_pos()
-                self.snake_world.control_by_keyboard(keys)
-                if keys[pg.K_r]:
-                    self.new_game()
-                if keys[pg.K_y]:
-                    for snake in self.snake_world.snakes:
-                        snake.add_segment()
+                if self.snake_world.one_snake_is_alive():
+                    pos = pg.mouse.get_pos()
+                    self.snake_world.control_by_keyboard(keys)
+                    if keys[pg.K_r]:
+                        self.new_game(self.activeGameType)
+                    if keys[pg.K_y]:
+                        for snake in self.snake_world.snakes:
+                            snake.add_segment()
 
+                    if keys[pg.K_q]:
+                        self.state = 'main menu'
+
+                else:
+                    self.state = 'game over'
+
+            elif self.state == 'game over':
                 if keys[pg.K_q]:
                     self.state = 'main menu'
 
-            elif self.state == 'game over':
-                if keys[pg.K_SPACE]:
-                    self.new_game()
+                elif keys[pg.K_SPACE]:
+                    self.new_game(self.activeGameType)
 
             elif self.state == 'main menu':
                 if keys[pg.K_SPACE]:
-                    self.new_game()
+                    self.new_game(self.activeGameType)
+
+                elif keys[pg.K_1]:
+                    self.activeGameType = 'single'
+
+                elif keys[pg.K_2]:
+                    self.activeGameType = 'dual'
+
+                elif keys[pg.K_ESCAPE]:
+                    self.running = False
 
             self.draw()
 
             pg.display.flip()
-            self.clock.tick(30)
+            self.clock.tick(FPS)
         pg.quit()
 
 
