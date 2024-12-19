@@ -1,9 +1,8 @@
-import pygame as pg
 from snake import *
-from settings import *
+from additionall.settings import *
 from snake_world import SnakeWorld
-from time import time
 from background import Background
+
 
 class Game:
     def __init__(self):
@@ -20,11 +19,9 @@ class Game:
         self.activeGameType = 'single'
         self.skins = [get_skin(0), get_skin(1)]
 
-
     def new_game(self, game_type='single'):  # type = single / duo
         self.running = True
         self.state = 'game'
-
         self.snake_world.new_game(game_type, skins=self.skins)
 
     def control(self):
@@ -55,6 +52,7 @@ class Game:
 Нажми пробел чтобы играть в режиме {self.get_russian_game_type()}!\n\nверсия 0.1"""
 
             self.draw_multiline_text(text)
+
     def get_russian_game_type(self):
         match self.activeGameType:
             case 'single':
@@ -64,6 +62,7 @@ class Game:
 
             case _:
                 return self.activeGameType
+
     def draw_text(self, text, x=0, y=0, color='white', size=DEFAULT_FONT_SIZE, font_type='Courier New'):
         font = pg.font.SysFont(None, size)
         img = font.render(text, True, color)
@@ -79,7 +78,6 @@ class Game:
         self.state = 'game over'
 
     def mainloop(self):
-
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:

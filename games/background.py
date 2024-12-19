@@ -1,5 +1,6 @@
-from settings import *
+from additionall.settings import *
 import pygame as pg
+
 
 class Background:
     def __init__(self, color='#333d48', image_filename=None):
@@ -8,7 +9,6 @@ class Background:
 
     def draw(self, scr):
         scr.fill(self.color)
-
 
 
 class GridBackground(Background):

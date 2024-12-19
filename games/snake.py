@@ -1,5 +1,4 @@
-import pygame as pg
-from settings import *
+from additionall.settings import *
 from copy import copy
 from time import time
 from random import choice, randint
