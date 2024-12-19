@@ -18,10 +18,11 @@ class Apple:
 
     def draw(self, scr):
 
-        pg.draw.rect(scr, self.color,
-                     pg.Rect(SNAKE_TILE * self.x, SNAKE_TILE * self.y, SNAKE_TILE, SNAKE_TILE))
+        #pg.draw.rect(scr, self.color,
+        #             pg.Rect(SNAKE_TILE * self.x, SNAKE_TILE * self.y, SNAKE_TILE, SNAKE_TILE))
+        pg.draw.circle(scr, self.color, (TILE * self.x + TILE / 2, TILE * self.y + TILE / 2), TILE / 2)
 
     def draw_hitbox(self, scr):
 
         pg.draw.rect(scr, self.color,
-                     pg.Rect(SNAKE_TILE * self.x, SNAKE_TILE * self.y, SNAKE_TILE, SNAKE_TILE), 1)
+                     pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE), 1)

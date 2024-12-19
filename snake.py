@@ -19,10 +19,12 @@ class SnakeSkin:
             return self.body[index % len(self.body)]
 
 
-SNAKE_DEFAULT_SKINS = {'red-orange-yellow': SnakeSkin('black', *(
-        list((i, 0, 0) for i in range(70, 190, 5)) +
-        list((0, i, 0) for i in range(190, 70, 5)) +
-        list((0, 0, i) for i in range(190, 70, 5)))),
+SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green', *(
+                               list((0, i, 0) for i in range(70, 190, 5)))),
+                       'red-orange-yellow': SnakeSkin('black', *(
+                               list((i, 0, 0) for i in range(70, 190, 5)) +
+                               list((0, i, 0) for i in range(190, 70, 5)) +
+                               list((0, 0, i) for i in range(190, 70, 5)))),
                        'black-white': SnakeSkin('black', *(
                                list((i, i, i) for i in range(70, 190, 5)) +
                                list((i, i, i) for i in range(190, 70, -5)))),
@@ -103,10 +105,10 @@ class Snake:
             y = snake_body_segment.y
 
             pg.draw.rect(scr, self.skin.get_color_for_index(i),
-                         pg.Rect(SNAKE_TILE * x, SNAKE_TILE * y, SNAKE_TILE, SNAKE_TILE))
+                         pg.Rect(TILE * x, TILE * y, TILE, TILE))
 
             pg.draw.rect(scr, self.skin.get_color_for_index(0),
-                         pg.Rect(SNAKE_TILE * x, SNAKE_TILE * y, SNAKE_TILE, SNAKE_TILE), 1)
+                         pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
 
     def draw_hitbox(self, scr):
         for i in range(len(self.body)):
@@ -115,7 +117,7 @@ class Snake:
             y = snake_body_segment.y
 
             pg.draw.rect(scr, '#00FF00',
-                         pg.Rect(SNAKE_TILE * x, SNAKE_TILE * y, SNAKE_TILE, SNAKE_TILE), 1)
+                         pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
 
     def dead(self):
         self.alive = False
