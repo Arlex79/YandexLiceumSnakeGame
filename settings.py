@@ -27,7 +27,7 @@ DEFAULT_SKIN = 0
 WASD_CONTROL_SCHEME = {'up': pg.K_w, 'right': pg.K_d, 'down': pg.K_s, 'left': pg.K_a}
 ARROWS_CONTROL_SCHEME = {'up': pg.K_UP, 'right': pg.K_RIGHT, 'down': pg.K_DOWN, 'left': pg.K_LEFT}
 
-NUMBERS_OF_APPLES = 1000
+NUMBERS_OF_APPLES = 75
 
 # FONTS
 FIRST_LINE_SPACE = 5
