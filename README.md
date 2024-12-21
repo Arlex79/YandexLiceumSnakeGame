@@ -1,4 +1,5 @@
 # Snake game | Змейка
+### Авторы: Староверов Данила и Фридрих Кирилл
 ## Установка
 ```
 pip install pygame
@@ -7,3 +8,6 @@ pip install pygame
 ```
 python main.py
 ```
+
+# Скриншоты
+
