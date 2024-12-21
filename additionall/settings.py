@@ -22,7 +22,7 @@ TILE = 20
 SNAKE_SLOWLY_MOVE_TIMEOUT = 0.09
 MAX_SNAKE_X = X_SIZE // TILE
 MAX_SNAKE_Y = Y_SIZE // TILE
-DEFAULT_SKIN = 0
+DEFAULT_SKIN = 2
 
 WASD_CONTROL_SCHEME = {'up': pg.K_w, 'right': pg.K_d, 'down': pg.K_s, 'left': pg.K_a}
 ARROWS_CONTROL_SCHEME = {'up': pg.K_UP, 'right': pg.K_RIGHT, 'down': pg.K_DOWN, 'left': pg.K_LEFT}

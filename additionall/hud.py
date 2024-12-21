@@ -18,4 +18,18 @@ class HUD:
                            color='white')
 
     def draw(self, scr):
+        pass
+
+
+class InfoHUD(HUD):
+    def __init__(self):
+        super().__init__()
+
+    def draw(self, scr):
         self.draw_multiline_text(scr, '''Игра в процессе!\nНажмите Y для увеличения!''')
+
+
+class SnakeHUD(HUD):
+    def __init__(self, snake, x, y):
+        super().__init__()
+        pass

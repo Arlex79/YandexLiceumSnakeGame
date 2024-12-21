@@ -115,7 +115,7 @@ class Snake:
             x = snake_body_segment.x
             y = snake_body_segment.y
 
-            pg.draw.rect(scr, '#00FF00',
+            pg.draw.rect(scr, 'green',
                          pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
 
     def dead(self):

@@ -17,7 +17,7 @@ class Game:
         self.inNenuBg = Background()
         self.state = 'main menu'
         self.activeGameType = 'single'
-        self.skins = [get_skin(0), get_skin(1)]
+        self.skins = [get_skin(DEFAULT_SKIN), get_skin(1)]
 
     def new_game(self, game_type='single'):  # type = single / duo
         self.running = True

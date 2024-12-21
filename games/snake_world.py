@@ -1,4 +1,4 @@
-from additionall.hud import HUD
+from additionall.hud import InfoHUD
 from objects.apple import Apple
 from games.background import *
 from games.snake import *
@@ -8,17 +8,17 @@ class SnakeWorld:
     def __init__(self):
         self.snakes = []  # Список для хранения объектов змей
         self.apples = []  # Список для хранения объектов яблок
-        self.inGameHud = HUD()  # Создаем HUD для отображения информации во время игры
+        self.inGameHud = InfoHUD()  # Создаем HUD для отображения информации во время игры
         self.bg = GridBackground()  # Создаем объект фона игры
         self.game_type = None  # Задача для хранения типа игры
 
         # Флаги для отрисовки хитбоксов и спрайтов
-        self.isDrawHitbox = True
-        self.isDrawSprites = False
+        self.isDrawHitbox = False
+        self.isDrawSprites = True
 
     def new_game(self, game_type='single', skins=[SnakeSkin('white', 'black', 'white'),
                                                   SnakeSkin('red', 'green', 'blue', 'red')]):
-        # Метод для инициализации новой игры
+        """Метод для инициализации новой игры"""
         self.game_type = game_type  # Устанавливаем тип игры
         self.snakes = []  # Очищаем список змей
         self.apples = [Apple() for i in range(NUMBERS_OF_APPLES)]  # Генерируем яблоки
@@ -98,8 +98,11 @@ class SnakeWorld:
 
         deadSnakeList = []  # Список для мертвых змей
         for snake in self.snakes:
+            head = (snake.body[0].x, snake.body[0].y)  # Получаем координаты головы
+            if head[0] < 0 or head[1] < 0 or head[0] >= MAX_SNAKE_X or head[
+                1] >= MAX_SNAKE_Y:  # Проверяем столкновение со стенами
+                snake.dead()
             if len(snake.body) > 2 and snake.alive:  # Проверяем, жива ли змея и имеет ли она более 2 сегментов
-                head = (snake.body[0].x, snake.body[0].y)  # Получаем координаты головы
                 numberOfColision = 0  # Счетчик столкновений
 
                 for coords in deadCoords:
@@ -107,17 +110,22 @@ class SnakeWorld:
                         numberOfColision += 1
 
                 if numberOfColision > 1:  # Если есть несколько пересечений
-                    print('dead!!!')  # Сообщаем, что змея мертва
-                    deadSnakeList.append(snake)  # Добавляем змею в список мертвых
                     snake.dead()  # Вызываем метод, чтобы отметить змею как мертвую
 
     def draw(self, scr):
         """Метод для отрисовки мира змей"""
         self.bg.draw(scr)  # Отрисовываем фон
         for snake in self.snakes:
-            snake.draw(scr)  # Отрисовываем каждую змею
+            if self.isDrawSprites:
+                snake.draw(scr)  # Отрисовываем каждую змею
+            if self.isDrawHitbox:
+                snake.draw_hitbox(scr)  # Отрисовываем хитбокс
 
         for apple in self.apples:
-            apple.draw(scr)  # Отрисовываем каждое яблоко
+            if self.isDrawSprites:
+                apple.draw(scr)  # Отрисовываем каждое яблоко
+            if self.isDrawHitbox:
+                apple.draw_hitbox(scr) # Отрисовываем хитбокс
+
 
         self.inGameHud.draw(scr)  # Отрисовываем интерфейс HUD
