@@ -1,1 +1,2 @@
 # YandexLiceumSnakeGame
+Смотри ветку `master`
