@@ -19,10 +19,7 @@ class GridBackground(Background):
         self.grid_width = grid_width
 
     def draw(self, scr):
-
         super().draw(scr)
-        print(789)
-
         for x in range(0, X_SIZE, self.grid_size):
             pg.draw.line(scr, self.grid_color, [x, 0], [x, Y_SIZE], self.grid_width)
 
