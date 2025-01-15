@@ -5,7 +5,6 @@ from game.objects.background import Background
 import csv
 
 
-
 class Game:
     def __init__(self):
         pg.init()
@@ -21,6 +20,7 @@ class Game:
         self.activeGameType = 'single'
         self.csv_settings_file_path = "game/additional/settings.csv"
         self.read_settings()
+
     def update_skins(self):
         self.skins = []
         for i in self.skins_ids:
@@ -38,7 +38,6 @@ class Game:
                     self.skins_ids.append(int(row[1]))
 
         self.update_skins()
-
 
     def new_game(self, game_type='single'):  # type = single / dual
         self.running = True
@@ -103,12 +102,10 @@ class Game:
 
     def game_over(self):
         self.state = 'game over'
+
     def try_edit_skin(self, skin_id, sdvig):
-
         if sdvig == 1:
-
             if self.skins_ids[skin_id] < len(SNAKE_DEFAULT_SKINS) - 1:
-                print(111)
                 self.skins_ids[skin_id] += 1
         elif sdvig == -1:
             if self.skins_ids[skin_id] > 0:
@@ -121,12 +118,18 @@ class Game:
                 if event.type == pg.QUIT:
                     self.running = False
                 elif (event.type == pg.KEYDOWN):
-                    # Which key was pressed
-                    if (event.key == pg.K_w):
-                        self.try_edit_skin(0, 1)
+                    if self.state == 'main menu':
 
-                    elif (event.key == pg.K_s):
-                        self.try_edit_skin(0, -1)
+                        if (event.key == pg.K_w):
+                            self.try_edit_skin(0, 1)
+
+                        elif (event.key == pg.K_s):
+                            self.try_edit_skin(0, -1)
+                        if (event.key == pg.K_UP):
+                            self.try_edit_skin(1, 1)
+
+                        elif (event.key == pg.K_down):
+                            self.try_edit_skin(1, -1)
             keys = pg.key.get_pressed()
             self.one_tick()
 
