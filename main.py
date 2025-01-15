@@ -1,3 +1,3 @@
-from games.game import *
+from game.game import *
 game = Game()
 game.mainloop()

@@ -1,5 +1,5 @@
 from time import time
-from additionall.settings import *
+from game.additionall.settings import *
 
 
 class HUD:
@@ -26,10 +26,13 @@ class InfoHUD(HUD):
         super().__init__()
 
     def draw(self, scr):
-        self.draw_multiline_text(scr, '''Игра в процессе!\nНажмите Y для увеличения!''')
-
+        self.draw_multiline_text(scr, '''Змейка''')
 
 class SnakeHUD(HUD):
-    def __init__(self, snake, x, y):
+    def __init__(self):
         super().__init__()
-        pass
+
+    def draw(self, scr):
+        self.draw_multiline_text(scr, '''Snake hud''')
+
+

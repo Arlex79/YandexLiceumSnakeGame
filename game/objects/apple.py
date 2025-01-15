@@ -1,4 +1,4 @@
-from additionall.settings import *
+from game.additionall.settings import *
 from random import randint
 
 

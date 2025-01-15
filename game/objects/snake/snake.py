@@ -1,8 +1,6 @@
-from additionall.settings import *
 from copy import copy
-from time import time
-from random import choice, randint
-
+from random import randint
+from game.objects.hud import *
 
 class SnakeSkin:
     def __init__(self, head='white', *body):
@@ -95,6 +93,7 @@ class Snake:
 
         else:
             self.skin = skin
+        self.hud = SnakeHUD()
 
     def draw(self, scr):
         # body = self.body[::-1]

@@ -1,7 +1,7 @@
-from additionall.hud import InfoHUD
-from objects.apple import Apple
-from games.background import *
-from games.snake import *
+from game.objects.hud import InfoHUD
+from game.objects.apple import Apple
+from game.objects.background import *
+from game.objects.snake.snake import *
 
 
 class SnakeWorld:

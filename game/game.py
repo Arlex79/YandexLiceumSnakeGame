@@ -1,7 +1,7 @@
-from snake import *
-from additionall.settings import *
-from snake_world import SnakeWorld
-from background import Background
+from game.objects.snake.snake import *
+from game.additionall.settings import *
+from game.objects.snake.snake_world import SnakeWorld
+from game.objects.background import Background
 
 
 class Game:
