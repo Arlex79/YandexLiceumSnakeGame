@@ -14,12 +14,12 @@ class Game:
         self.cheat = True
         self.running = True
         self.snake_world = SnakeWorld()
-        self.inNenuBg = Background()
+        self.inMenuBg = Background()
         self.state = 'main menu'
         self.activeGameType = 'single'
         self.skins = [get_skin(DEFAULT_SKIN), get_skin(1)]
 
-    def new_game(self, game_type='single'):  # type = single / duo
+    def new_game(self, game_type='single'):  # type = single / dual
         self.running = True
         self.state = 'game'
         self.snake_world.new_game(game_type, skins=self.skins)
@@ -42,23 +42,26 @@ class Game:
             self.draw_game()
 
         if self.state == 'game over':
-            self.inNenuBg.draw(self.scr)
+            self.inMenuBg.draw(self.scr)
             text = "Игра окончена!\n\nНажми Q для выхода в главное меню\nНажми пробел, чтобы играть снова"
             self.draw_multiline_text(text)
 
         if self.state == 'main menu':
-            self.inNenuBg.draw(self.scr)
-            text = f"""----------< Змейка >----------\n\nНажми 1 для выбора однопользовательской игры\nНажми 2 для выбора двупользовательской игры\n
-Нажми пробел чтобы играть в режиме {self.get_russian_game_type()}!\n\nверсия 0.1"""
+            self.inMenuBg.draw(self.scr)
+            text = f"""----------< Змейка >----------
+Нажмите 1 или 2 для выбора количества игроков
+Нажмите пробел чтобы играть
+
+Игроков: {self.get_game_type()}"""
 
             self.draw_multiline_text(text)
 
-    def get_russian_game_type(self):
+    def get_game_type(self):
         match self.activeGameType:
             case 'single':
-                return 'однопользовательская игра'
+                return 1
             case 'dual':
-                return 'двупользовательская игра'
+                return 2
 
             case _:
                 return self.activeGameType
