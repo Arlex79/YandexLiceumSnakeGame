@@ -1,9 +1,9 @@
-from game.additionall.settings import *
+from game.additional.settings import *
 from random import randint
 
 
 class Apple:
-    def __init__(self, x=None, y=None, size=1, color='red'):
+    def __init__(self, x=None, y=None, size=1, color=APPLE_COLOR):
         if x is None:
             self.x = randint(0, MAX_SNAKE_X - 1)
         else:

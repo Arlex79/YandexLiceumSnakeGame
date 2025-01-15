@@ -1,7 +1,9 @@
 from game.objects.snake.snake import *
-from game.additionall.settings import *
+from game.additional.settings import *
 from game.objects.snake.snake_world import SnakeWorld
 from game.objects.background import Background
+import csv
+
 
 
 class Game:
@@ -17,7 +19,26 @@ class Game:
         self.inMenuBg = Background()
         self.state = 'main menu'
         self.activeGameType = 'single'
-        self.skins = [get_skin(DEFAULT_SKIN), get_skin(1)]
+        self.csv_settings_file_path = "game/additional/settings.csv"
+        self.read_settings()
+    def update_skins(self):
+        self.skins = []
+        for i in self.skins_ids:
+            self.skins.append(get_skin(int(i)))
+
+    def read_settings(self):
+        self.skins_ids = []
+        with open(self.csv_settings_file_path, encoding="utf8") as csvfile:
+            reader = csv.reader(csvfile, delimiter='=', quotechar='"')
+            for index, row in enumerate(reader):
+                if row[0] == "player1skin":
+                    self.skins_ids.append(int(row[1]))
+
+                elif row[0] == "player2skin":
+                    self.skins_ids.append(int(row[1]))
+
+        self.update_skins()
+
 
     def new_game(self, game_type='single'):  # type = single / dual
         self.running = True
@@ -48,11 +69,14 @@ class Game:
 
         if self.state == 'main menu':
             self.inMenuBg.draw(self.scr)
-            text = f"""----------< Змейка >----------
+            text = f"""         Змейка
 Нажмите 1 или 2 для выбора количества игроков
 Нажмите пробел чтобы играть
 
-Игроков: {self.get_game_type()}"""
+Игроков: {self.get_game_type()}
+
+Скин игрока 1 (wasd): {self.skins[0]}
+Скин игрока 2 (стрелки): {self.skins[1]}"""
 
             self.draw_multiline_text(text)
 
@@ -79,13 +103,30 @@ class Game:
 
     def game_over(self):
         self.state = 'game over'
+    def try_edit_skin(self, skin_id, sdvig):
+
+        if sdvig == 1:
+
+            if self.skins_ids[skin_id] < len(SNAKE_DEFAULT_SKINS) - 1:
+                print(111)
+                self.skins_ids[skin_id] += 1
+        elif sdvig == -1:
+            if self.skins_ids[skin_id] > 0:
+                self.skins_ids[skin_id] -= 1
+        self.update_skins()
 
     def mainloop(self):
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.running = False
+                elif (event.type == pg.KEYDOWN):
+                    # Which key was pressed
+                    if (event.key == pg.K_w):
+                        self.try_edit_skin(0, 1)
 
+                    elif (event.key == pg.K_s):
+                        self.try_edit_skin(0, -1)
             keys = pg.key.get_pressed()
             self.one_tick()
 
@@ -121,6 +162,7 @@ class Game:
 
                 elif keys[pg.K_2]:
                     self.activeGameType = 'dual'
+
 
                 elif keys[pg.K_ESCAPE]:
                     self.running = False

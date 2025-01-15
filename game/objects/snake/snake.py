@@ -3,10 +3,12 @@ from random import randint
 from game.objects.hud import *
 
 class SnakeSkin:
-    def __init__(self, head='white', *body):
+    def __init__(self, name, head='white', *body):
         self.head = head
         self.body = body
-
+        self.name = name
+    def __str__(self):
+        return str(self.name)
     def get_color_for_index(self, index):
         assert index >= 0
         if index == 0:
@@ -16,16 +18,16 @@ class SnakeSkin:
             return self.body[index % len(self.body)]
 
 
-SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green', *(
+SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient','green', *(
                                list((0, i, 0) for i in range(70, 190, 5)))),
-                       'red-orange-yellow': SnakeSkin('black', *(
+                       'red-orange-yellow': SnakeSkin('red gradient','black', *(
                                list((i, 0, 0) for i in range(70, 190, 5)) +
                                list((0, i, 0) for i in range(190, 70, 5)) +
                                list((0, 0, i) for i in range(190, 70, 5)))),
-                       'black-white': SnakeSkin('black', *(
+                       'black-white': SnakeSkin('black-white gradient','black', *(
                                list((i, i, i) for i in range(70, 190, 5)) +
                                list((i, i, i) for i in range(190, 70, -5)))),
-                       'yellow-cyan': SnakeSkin('red', *(
+                       'yellow-cyan': SnakeSkin('yellow-cyan gradient','red', *(
                                list((i, i, 0) for i in range(70, 190, 10)) +
                                list((0, i, i) for i in range(190, 70, -10))))
                        }
@@ -33,10 +35,7 @@ SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green', *(
 
 def get_skin(name):
     try:
-        if type(name) == str:
-            skin = SNAKE_DEFAULT_SKINS[DEFAULT_SKIN]
-
-        elif type(name) == int:
+        if type(name) == int:
             skin = list(SNAKE_DEFAULT_SKINS.values())[name]
 
     except ValueError:
@@ -51,12 +50,12 @@ def get_skin(name):
 class SnakeBodySegment:
     def __init__(self, x=None, y=None):
         if x is None:
-            self.x = randint(0, MAX_SNAKE_X)
+            self.x = randint(2, MAX_SNAKE_X - 2)
         else:
             self.x = x
 
         if y is None:
-            self.y = randint(0, MAX_SNAKE_Y)
+            self.y = randint(2, MAX_SNAKE_Y - 2)
 
         else:
             self.y = y

@@ -1,4 +1,4 @@
-from game.additionall.settings import *
+from game.additional.settings import *
 import pygame as pg
 
 
@@ -12,7 +12,7 @@ class Background:
 
 
 class GridBackground(Background):
-    def __init__(self, color='#333333', image_filename=None, grid_size=TILE, grid_color='black', grid_width=1):
+    def __init__(self, color='#333333', image_filename=None, grid_size=TILE, grid_color=GRID_COLOR, grid_width=1):
         super().__init__(color, image_filename)
         self.grid_size = grid_size
         self.grid_color = grid_color
