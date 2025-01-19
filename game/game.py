@@ -39,6 +39,13 @@ class Game:
 
         self.update_skins()
 
+    def write_settings(self):
+        import csv
+        with open(self.csv_settings_file_path, 'w', newline='') as f:
+            writer = csv.writer(f, delimiter="=")
+            writer.writerows([["player1skin", self.skins_ids[0]], ["player2skin", self.skins_ids[1]]])
+
+
     def new_game(self, game_type='single'):  # type = single / dual
         self.running = True
         self.state = 'game'
@@ -99,6 +106,7 @@ class Game:
             self.snake_world.move_snakes()
             self.snake_world.check_snakes_eat_apples()
             self.snake_world.check_snakes_dead()
+        self.write_settings()
 
     def game_over(self):
         self.state = 'game over'
@@ -128,7 +136,7 @@ class Game:
                         if (event.key == pg.K_UP):
                             self.try_edit_skin(1, 1)
 
-                        elif (event.key == pg.K_down):
+                        elif (event.key == pg.K_DOWN):
                             self.try_edit_skin(1, -1)
             keys = pg.key.get_pressed()
             self.one_tick()

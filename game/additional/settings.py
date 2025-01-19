@@ -15,7 +15,7 @@ HALF_WIDTH = WIDTH / 2
 # COLORS
 BG_COLOR = 'black'
 GRID_COLOR = 'black'
-APPLE_COLOR = 'magenta'
+APPLE_COLOR = 'red'
 
 # SNAKE
 SNAKE_DEFAULT_COLOR = 'green'
