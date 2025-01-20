@@ -8,6 +8,7 @@ import csv
 class Game:
     def __init__(self):
         pg.init()
+        pg.display.set_caption("Snake - Змейка")
         self.isDrawHitbox = True
         self.isDrawSprites = False
         self.scr = pg.display.set_mode(size)

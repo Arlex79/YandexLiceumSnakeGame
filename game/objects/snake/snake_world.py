@@ -128,4 +128,4 @@ class SnakeWorld:
                 apple.draw_hitbox(scr) # Отрисовываем хитбокс
 
 
-        self.inGameHud.draw(scr)  # Отрисовываем интерфейс HUD
+        self.inGameHud.draw(scr, *self.snakes)  # Отрисовываем интерфейс HUD

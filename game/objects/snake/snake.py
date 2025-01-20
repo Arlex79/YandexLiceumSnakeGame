@@ -2,13 +2,16 @@ from copy import copy
 from random import randint
 from game.objects.hud import *
 
+
 class SnakeSkin:
     def __init__(self, name, head='white', *body):
         self.head = head
         self.body = body
         self.name = name
+
     def __str__(self):
         return str(self.name)
+
     def get_color_for_index(self, index):
         assert index >= 0
         if index == 0:
@@ -18,16 +21,16 @@ class SnakeSkin:
             return self.body[index % len(self.body)]
 
 
-SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient','green', *(
-                               list((0, i, 0) for i in range(70, 190, 5)))),
-                       'red-orange-yellow': SnakeSkin('red gradient','black', *(
+SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient', 'green', *(
+    list((0, i, 0) for i in range(70, 190, 5)))),
+                       'red-orange-yellow': SnakeSkin('red gradient', 'black', *(
                                list((i, 0, 0) for i in range(70, 190, 5)) +
                                list((0, i, 0) for i in range(190, 70, 5)) +
                                list((0, 0, i) for i in range(190, 70, 5)))),
-                       'black-white': SnakeSkin('black-white gradient','black', *(
+                       'black-white': SnakeSkin('black-white gradient', 'black', *(
                                list((i, i, i) for i in range(70, 190, 5)) +
                                list((i, i, i) for i in range(190, 70, -5)))),
-                       'yellow-cyan': SnakeSkin('yellow-cyan gradient','red', *(
+                       'yellow-cyan': SnakeSkin('yellow-cyan gradient', 'red', *(
                                list((i, i, 0) for i in range(70, 190, 10)) +
                                list((0, i, i) for i in range(190, 70, -10))))
                        }
@@ -93,7 +96,8 @@ class Snake:
         else:
             self.skin = skin
         self.hud = SnakeHUD()
-
+    def getScore(self):
+        return len(self.body)
     def draw(self, scr):
         # body = self.body[::-1]
         for i in range(len(self.body)):

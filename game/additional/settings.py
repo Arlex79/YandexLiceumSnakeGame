@@ -18,6 +18,8 @@ GRID_COLOR = 'black'
 APPLE_COLOR = 'red'
 
 # SNAKE
+APPLE_IMG_PATH = "game/img/apple1.png"
+BOOST_APPLE_IMG_PATH = "game/img/gapple.png"
 SNAKE_DEFAULT_COLOR = 'green'
 TILE = 20
 SNAKE_SLOWLY_MOVE_TIMEOUT = 0.09
