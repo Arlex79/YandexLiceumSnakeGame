@@ -17,9 +17,10 @@ BG_COLOR = 'black'
 GRID_COLOR = 'black'
 APPLE_COLOR = 'red'
 WALL_COLOR = 'black'
+BOOST_APPLE_COLOR = 'yellow'
 
 # SNAKE
-APPLE_IMG_PATH = "game/img/gapple.png"
+APPLE_IMG_PATH = "game/img/apple1.png"
 BOOST_APPLE_IMG_PATH = "game/img/gapple.png"
 SNAKE_DEFAULT_COLOR = 'green'
 SNAKE_SLOWLY_MOVE_TIMEOUT = 0.09
@@ -31,7 +32,8 @@ WASD_CONTROL_SCHEME = {'up': pg.K_w, 'right': pg.K_d, 'down': pg.K_s, 'left': pg
 ARROWS_CONTROL_SCHEME = {'up': pg.K_UP, 'right': pg.K_RIGHT, 'down': pg.K_DOWN, 'left': pg.K_LEFT}
 
 # OTHER
-NUMBERS_OF_APPLES = 75
+NUMBERS_OF_APPLES = 50
+NUMBERS_OF_BOOST_APPLES = 50
 NUMBERS_OF_WALLS = 25
 FPS = 60
 
