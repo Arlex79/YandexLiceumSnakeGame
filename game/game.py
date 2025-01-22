@@ -9,13 +9,14 @@ class Game:
     def __init__(self):
         pg.init()
         pg.display.set_caption("Snake - Змейка")
-        self.isDrawHitbox = True
-        self.isDrawSprites = False
+
         self.scr = pg.display.set_mode(size)
         self.clock = pg.time.Clock()
         self.cheat = True
         self.running = True
         self.snake_world = SnakeWorld()
+        self.snake_world.isDrawHitbox = False
+        self.snake_world.isDrawSprites = True
         self.inMenuBg = Background()
         self.state = 'main menu'
         self.activeGameType = 'single'
@@ -56,7 +57,7 @@ class Game:
         self.snake_world.control_by_keyboard()
 
     def draw_game(self):
-        self.snake_world.draw(self.scr)
+        self.snake_world.draw(self.scr, int(self.clock.get_fps()))
 
     def draw_multiline_text(self, text):
         spl_text = text.split('\n')
@@ -76,14 +77,17 @@ class Game:
 
         if self.state == 'main menu':
             self.inMenuBg.draw(self.scr)
-            text = f"""         Змейка
+            text = f"""Змейка
+            
 Нажмите 1 или 2 для выбора количества игроков
 Нажмите пробел чтобы играть
 
 Игроков: {self.get_game_type()}
 
 Скин игрока 1 (wasd): {self.skins[0]}
-Скин игрока 2 (стрелки): {self.skins[1]}"""
+Скин игрока 2 (стрелки): {self.skins[1]}
+
+Github: github.com/Arlex79/YandexLiceumSnakeGame"""
 
             self.draw_multiline_text(text)
 
@@ -107,7 +111,7 @@ class Game:
             self.snake_world.move_snakes()
             self.snake_world.check_snakes_eat_apples()
             self.snake_world.check_snakes_dead()
-        self.write_settings()
+
 
     def game_over(self):
         self.state = 'game over'
@@ -120,6 +124,7 @@ class Game:
             if self.skins_ids[skin_id] > 0:
                 self.skins_ids[skin_id] -= 1
         self.update_skins()
+        self.write_settings()
 
     def mainloop(self):
         while self.running:
@@ -144,7 +149,7 @@ class Game:
 
             if self.state == 'game':
                 if self.snake_world.one_snake_is_alive():
-                    pos = pg.mouse.get_pos()
+
                     self.snake_world.control_by_keyboard(keys)
                     if keys[pg.K_r]:
                         self.new_game(self.activeGameType)

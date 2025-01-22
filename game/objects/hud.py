@@ -26,13 +26,13 @@ class InfoHUD(HUD):
     def __init__(self):
         super().__init__()
 
-    def draw(self, scr, snake1, snake2=None):
+    def draw(self, scr,  snake1, snake2=None, fps=None):
         snake1text = f"Змея 1 (wasd): {snake1.getScore()}"
         if not snake2 is None:
             snake2text= f"Змея 2 (стрелки): {snake2.getScore()}"
         else:
             snake2text = ""
-        self.draw_multiline_text(scr, f'''Игра Змейка
+        self.draw_multiline_text(scr, f'''Игра Змейка FPS: {fps}
 {snake1text}
 {snake2text}''')
 

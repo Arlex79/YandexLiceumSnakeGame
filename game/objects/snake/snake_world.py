@@ -2,26 +2,25 @@ from game.objects.hud import InfoHUD
 from game.objects.apple import Apple
 from game.objects.background import *
 from game.objects.snake.snake import *
-
+from game.objects.wall import *
 
 class SnakeWorld:
     def __init__(self):
-        self.snakes = []  # Список для хранения объектов змей
-        self.apples = []  # Список для хранения объектов яблок
+
         self.inGameHud = InfoHUD()  # Создаем HUD для отображения информации во время игры
         self.bg = GridBackground()  # Создаем объект фона игры
         self.game_type = None  # Задача для хранения типа игры
 
         # Флаги для отрисовки хитбоксов и спрайтов
-        self.isDrawHitbox = False
+        self.isDrawHitbox = True
         self.isDrawSprites = True
 
-    def new_game(self, game_type='single', skins=[SnakeSkin('white', 'black', 'white'),
-                                                  SnakeSkin('red', 'green', 'blue', 'red')]):
+    def new_game(self, game_type='single', skins=[]):
         """Метод для инициализации новой игры"""
         self.game_type = game_type  # Устанавливаем тип игры
-        self.snakes = []  # Очищаем список змей
-        self.apples = [Apple() for i in range(NUMBERS_OF_APPLES)]  # Генерируем яблоки
+        self.snakes = []  # Список для хранения объектов змей
+        self.apples = [Apple() for _ in range(NUMBERS_OF_APPLES)]  # Генерируем яблоки
+        self.walls = [Wall(randint(0, MAX_SNAKE_X), randint(0, MAX_SNAKE_Y)) for _ in range(NUMBERS_OF_WALLS)]  # Стены
 
         # Добавляем змеи согласно типу игры
         if game_type == 'single':
@@ -38,11 +37,6 @@ class SnakeWorld:
             if snake.alive:  # Если змея жива
                 return True
         return False  # Если все змеи мертвы
-
-    def add_random_coords_snake(self):
-        """Метод для добавления случайных координат для змеи"""
-        x = randint(0, MAX_SNAKE_X)  # Генерируем случайный X
-        y = randint(0, MAX_SNAKE_Y)  # Генерируем случайный Y
 
     def control_by_keyboard(self, keys):
         """Метод для управления змеями с помощью клавиатуры"""
@@ -91,12 +85,14 @@ class SnakeWorld:
 
     def check_snakes_dead(self):
         """Метод для проверки, мертвы ли змеи"""
-        deadCoords = []  # Список координат тела змей
+
+        deadCoords = []  # Список координат тела змей и стен
         for snake in self.snakes:
             for segment in snake.body:
                 deadCoords.append((segment.x, segment.y))  # Добавляем координаты тела
+        for wall in self.walls:
+            deadCoords.append((wall.x, wall.y))
 
-        deadSnakeList = []  # Список для мертвых змей
         for snake in self.snakes:
             head = (snake.body[0].x, snake.body[0].y)  # Получаем координаты головы
             if head[0] < 0 or head[1] < 0 or head[0] >= MAX_SNAKE_X or head[
@@ -112,7 +108,7 @@ class SnakeWorld:
                 if numberOfColision > 1:  # Если есть несколько пересечений
                     snake.dead()  # Вызываем метод, чтобы отметить змею как мертвую
 
-    def draw(self, scr):
+    def draw(self, scr, fps):
         """Метод для отрисовки мира змей"""
         self.bg.draw(scr)  # Отрисовываем фон
         for snake in self.snakes:
@@ -127,5 +123,11 @@ class SnakeWorld:
             if self.isDrawHitbox:
                 apple.draw_hitbox(scr) # Отрисовываем хитбокс
 
+        for wall in self.walls:
+            if self.isDrawSprites:
+                wall.draw(scr)  # Отрисовываем каждую стену
+            if self.isDrawHitbox:
+                wall.draw_hitbox(scr) # Отрисовываем хитбокс
 
-        self.inGameHud.draw(scr, *self.snakes)  # Отрисовываем интерфейс HUD
+
+        self.inGameHud.draw(scr, *self.snakes, fps=fps)  # Отрисовываем интерфейс HUD
