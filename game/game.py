@@ -3,6 +3,10 @@ from game.additional.settings import *
 from game.objects.snake.snake_world import SnakeWorld
 from game.objects.background import Background
 import csv
+import sqlite3
+from datetime import datetime as dt
+
+
 
 
 class Game:
@@ -23,6 +27,39 @@ class Game:
         self.csv_settings_file_path = "game/additional/settings.csv"
         self.read_settings()
 
+        self.db_con = sqlite3.connect("game/game_records.sqlite")
+
+        self.singleplayer_records = []
+        self.dualplayer_records = []
+    def get_time(self):
+        time = dt.now()
+        return time.strftime("%H:%M %d.%m.%Y")
+
+    def load_records(self):
+        self.singleplayer_records = []
+        self.dualplayer_records = []
+        cur = self.db_con.cursor()
+        result_singleplayer = cur.execute("""SELECT * FROM singleplayer
+        """).fetchall()
+        for elem in result_singleplayer:
+            self.singleplayer_records.append(elem)
+
+        result_dualplayer = cur.execute("""SELECT * FROM dualplayer
+        """).fetchall()
+        for elem in result_dualplayer:
+            self.dualplayer_records.append(elem)
+    def log_record(self, game_type='single', score1=0, score2=0):
+        time_now = self.get_time()
+        cur = self.db_con.cursor()
+        if game_type == 'single':
+            cur.execute(f"""INSERT INTO singleplayer(date, score) VALUES('{time_now}', {score1}) 
+                   """)
+        elif game_type == "dual":
+            cur.execute(f"""INSERT INTO dualplayer(date, score1, score2) 
+            VALUES('{time_now}', {score1}, {score2}) 
+                               """)
+        self.db_con.commit()
+
     def update_skins(self):
         self.skins = []
         for i in self.skins_ids:
@@ -40,6 +77,7 @@ class Game:
                     self.skins_ids.append(int(row[1]))
 
         self.update_skins()
+
 
     def write_settings(self):
         import csv
@@ -70,17 +108,26 @@ class Game:
         if self.state == 'game':
             self.draw_game()
 
-        if self.state == 'game over':
+        elif self.state == 'game over':
             self.inMenuBg.draw(self.scr)
             text = "Игра окончена!\n\nНажми Q для выхода в главное меню\nНажми пробел, чтобы играть снова"
             self.draw_multiline_text(text)
-
-        if self.state == 'main menu':
+        elif self.state == "records view":
+            self.inMenuBg.draw(self.scr)
+            text = '''Просмотр игровых рекордов
+            Однопользовательская игра:
+            
+            Двупользовательская игра:
+            
+            '''
+            self.draw_multiline_text(text)
+        elif self.state == 'main menu':
             self.inMenuBg.draw(self.scr)
             text = f"""Змейка
             
 Нажмите 1 или 2 для выбора количества игроков
 Нажмите пробел чтобы играть
+Нажмите E для просмотра рекордов
 
 Игроков: {self.get_game_type()}
 
@@ -126,6 +173,14 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
         self.update_skins()
         self.write_settings()
 
+    def finish_game(self):
+        if self.activeGameType == 'single':
+            self.log_record(self.activeGameType,
+                            self.snake_world.snakes[0].getScore())
+        elif self.activeGameType == 'dual':
+            self.log_record(self.activeGameType,
+                            self.snake_world.snakes[0].getScore(),
+                            self.snake_world.snakes[1].getScore())
     def mainloop(self):
         while self.running:
             for event in pg.event.get():
@@ -158,10 +213,14 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
                             snake.add_segment()
 
                     if keys[pg.K_q]:
+                        self.finish_game()
                         self.state = 'main menu'
 
                 else:
                     self.state = 'game over'
+                    self.finish_game()
+            elif self.state == 'records view':
+                pass
 
             elif self.state == 'game over':
                 if keys[pg.K_q]:
@@ -189,6 +248,7 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
             pg.display.flip()
             self.clock.tick(FPS)
         pg.quit()
+        self.db_con.close()
 
 
 if __name__ == '__main__':
