@@ -22,7 +22,6 @@ class SnakeWorld:
         self.boost_apples = [BoostApple() for _ in range(NUMBERS_OF_BOOST_APPLES)]
         self.walls = [Wall(randint(0, MAX_SNAKE_X), randint(0, MAX_SNAKE_Y)) for _ in range(NUMBERS_OF_WALLS)]
 
-        # Добавляем змеи согласно типу игры
         if game_type == 'single':
             self.snakes.append(Snake(skin=skins[0], control_scheme=WASD_CONTROL_SCHEME))
         elif game_type == 'dual':
@@ -122,7 +121,7 @@ class SnakeWorld:
 
     def draw(self, scr, fps):
         """Метод для отрисовки мира змей"""
-        self.bg.draw(scr)  # Отрисовываем фон
+        self.bg.draw(scr)
         for snake in self.snakes + self.apples + self.boost_apples + self.walls:
             if self.isDrawSprites:
                 snake.draw(scr)

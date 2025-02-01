@@ -8,7 +8,7 @@ class Background:
         self.image_filename = image_filename
 
     def draw(self, scr):
-        """Заполняет указанную поверхность цветом фона."""
+        """Заполняет данную поверхность цветом фона."""
         scr.fill(self.color)
 
 
@@ -20,7 +20,7 @@ class GridBackground(Background):
         self.grid_width = grid_width
 
     def draw(self, scr):
-        """Рисует фон и сетку на указанной поверхности."""
+        """Рисует фон и сетку на заданной поверхности."""
         super().draw(scr)
         for x in range(0, X_SIZE, self.grid_size):
             pg.draw.line(scr, self.grid_color, [x, 0], [x, Y_SIZE], self.grid_width)

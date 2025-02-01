@@ -62,7 +62,6 @@ class SnakeBodySegment:
 
         if y is None:
             self.y = randint(2, MAX_SNAKE_Y - 2)
-
         else:
             self.y = y
 

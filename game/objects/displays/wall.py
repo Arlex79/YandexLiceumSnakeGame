@@ -24,7 +24,7 @@ class Wall:
         pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE), 1)
 
     def get_position(self):
-        """Возвращает текущие координаты стены."""
+        """Возвращает текущие координаты заданной стены."""
         return self.x, self.y
 
     def is_collided(self, snake_head):

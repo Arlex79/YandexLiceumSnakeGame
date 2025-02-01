@@ -30,7 +30,7 @@ class InfoHUD(HUD):
         super().__init__()
 
     def draw(self, scr,  snake1, snake2=None, fps=None):
-        """исует информацию о состоянии игры на указанной поверхности."""
+        """Рисует информацию о состоянии игры на заданной поверхности."""
         snake1text = f"Змея 1 (wasd): {snake1.getScore()}"
         if snake2 is not None:
             snake2text = f"Змея 2 (стрелки): {snake2.getScore()}"
@@ -46,5 +46,5 @@ class SnakeHUD(HUD):
         super().__init__()
 
     def draw(self, scr):
-        """Рисует текст "Snake hud" на указанной поверхности."""
+        """Рисует текст "Snake hud" на заданной поверхности."""
         self.draw_multiline_text(scr, '''Snake hud''')

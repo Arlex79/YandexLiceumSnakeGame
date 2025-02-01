@@ -15,6 +15,7 @@ class Apple:
             self.y = randint(0, MAX_SNAKE_Y - 1)
         else:
             self.y = y
+
         self.size = the_size
         self.color = color
 
