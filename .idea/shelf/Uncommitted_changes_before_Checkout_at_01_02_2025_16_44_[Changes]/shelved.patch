@@ -1,0 +1,447 @@
+Index: games/background.py
+===================================================================
+diff --git a/games/background.py b/game/objects/background.py
+rename from games/background.py
+rename to game/objects/background.py
+--- a/games/background.py	
++++ b/game/objects/background.py	
+@@ -1,4 +1,4 @@
+-from additionall.settings import *
++from game.additional.settings import *
+ import pygame as pg
+ 
+ 
+@@ -12,17 +12,14 @@
+ 
+ 
+ class GridBackground(Background):
+-    def __init__(self, color='#333333', image_filename=None, grid_size=TILE, grid_color='black', grid_width=1):
++    def __init__(self, color='#333333', image_filename=None, grid_size=TILE, grid_color=GRID_COLOR, grid_width=1):
+         super().__init__(color, image_filename)
+         self.grid_size = grid_size
+         self.grid_color = grid_color
+         self.grid_width = grid_width
+ 
+     def draw(self, scr):
+-
+         super().draw(scr)
+-        print(789)
+-
+         for x in range(0, X_SIZE, self.grid_size):
+             pg.draw.line(scr, self.grid_color, [x, 0], [x, Y_SIZE], self.grid_width)
+ 
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	
++++ b/.idea/vcs.xml	
+@@ -2,5 +2,6 @@
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+     <mapping directory="" vcs="Git" />
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .idea/YandexLiceumSnake.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"PYTHON_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\">\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <excludeFolder url=\"file://$MODULE_DIR$/.venv\" />\r\n    </content>\r\n    <orderEntry type=\"jdk\" jdkName=\"Python 3.12 (YandexLiceumSnake)\" jdkType=\"Python SDK\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+===================================================================
+diff --git a/.idea/YandexLiceumSnake.iml b/.idea/YandexLiceumSnake.iml
+--- a/.idea/YandexLiceumSnake.iml	
++++ b/.idea/YandexLiceumSnake.iml	
+@@ -4,7 +4,7 @@
+     <content url="file://$MODULE_DIR$">
+       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+     </content>
+-    <orderEntry type="jdk" jdkName="Python 3.12 (YandexLiceumSnake)" jdkType="Python SDK" />
++    <orderEntry type="jdk" jdkName="Python 3.12 (YandexLiceumSnake) (2)" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: additionall/settings.py
+===================================================================
+diff --git a/additionall/settings.py b/game/additional/settings.py
+rename from additionall/settings.py
+rename to game/additional/settings.py
+--- a/additionall/settings.py	
++++ b/game/additional/settings.py	
+@@ -2,32 +2,40 @@
+ import pygame as pg
+ from math import sqrt, pi
+ 
+-FPS = 60
+ 
+-# SCREEN SIZE
++
++# SIZES
+ Y_SIZE = HEIGHT = 700
+ X_SIZE = WIDTH = 1000
+ size = [WIDTH, HEIGHT]
+ HALF_HEIGHT = HEIGHT / 2
+ HALF_WIDTH = WIDTH / 2
+-
++TILE = 20
+ 
+ # COLORS
+ BG_COLOR = 'black'
+-GRID_COLOR = 'green'
++GRID_COLOR = 'black'
++APPLE_COLOR = 'red'
++WALL_COLOR = 'black'
++BOOST_APPLE_COLOR = 'yellow'
+ 
+ # SNAKE
++APPLE_IMG_PATH = "game/img/apple1.png"
++BOOST_APPLE_IMG_PATH = "game/img/gapple.png"
+ SNAKE_DEFAULT_COLOR = 'green'
+-TILE = 20
+ SNAKE_SLOWLY_MOVE_TIMEOUT = 0.09
+ MAX_SNAKE_X = X_SIZE // TILE
+ MAX_SNAKE_Y = Y_SIZE // TILE
+-DEFAULT_SKIN = 0
++DEFAULT_SKIN = 2
+ 
+ WASD_CONTROL_SCHEME = {'up': pg.K_w, 'right': pg.K_d, 'down': pg.K_s, 'left': pg.K_a}
+ ARROWS_CONTROL_SCHEME = {'up': pg.K_UP, 'right': pg.K_RIGHT, 'down': pg.K_DOWN, 'left': pg.K_LEFT}
+ 
+-NUMBERS_OF_APPLES = 75
++# OTHER
++NUMBERS_OF_APPLES = 50
++NUMBERS_OF_BOOST_APPLES = 50
++NUMBERS_OF_WALLS = 25
++FPS = 60
+ 
+ # FONTS
+ FIRST_LINE_SPACE = 5
+Index: objects/apple.py
+===================================================================
+diff --git a/objects/apple.py b/game/objects/apples/apple.py
+rename from objects/apple.py
+rename to game/objects/apples/apple.py
+--- a/objects/apple.py	
++++ b/game/objects/apples/apple.py	
+@@ -1,9 +1,14 @@
+-from additionall.settings import *
++from game.additional.settings import *
+ from random import randint
+ 
+ 
+ class Apple:
+-    def __init__(self, x=None, y=None, size=1, color='red'):
++    image = pg.image.load(APPLE_IMG_PATH)
++    image = pg.transform.scale(image, (TILE, TILE))
++    def __init__(self, x=None, y=None, size=1, color=APPLE_COLOR):
++
++
++
+         if x is None:
+             self.x = randint(0, MAX_SNAKE_X - 1)
+         else:
+@@ -18,7 +23,7 @@
+ 
+     def draw(self, scr):
+         """Отрисовывает яблоко на экране"""
+-        pg.draw.circle(scr, self.color, (TILE * self.x + TILE // 2, TILE * self.y + TILE // 2), TILE // 2)
++        scr.blit(self.image, (TILE * self.x, TILE * self.y))
+ 
+     def draw_hitbox(self, scr):
+         """Отображает хитбокс яблока"""
+Index: games/snake.py
+===================================================================
+diff --git a/games/snake.py b/game/objects/snake/snake.py
+rename from games/snake.py
+rename to game/objects/snake/snake.py
+--- a/games/snake.py	
++++ b/game/objects/snake/snake.py	
+@@ -1,13 +1,16 @@
+-from additionall.settings import *
+ from copy import copy
+-from time import time
+-from random import choice, randint
++from random import randint
++from game.objects.hud import *
+ 
+ 
+ class SnakeSkin:
+-    def __init__(self, head='white', *body):
++    def __init__(self, name, head='white', *body):
+         self.head = head
+         self.body = body
++        self.name = name
++
++    def __str__(self):
++        return str(self.name)
+ 
+     def get_color_for_index(self, index):
+         assert index >= 0
+@@ -18,16 +21,16 @@
+             return self.body[index % len(self.body)]
+ 
+ 
+-SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green', *(
+-                               list((0, i, 0) for i in range(70, 190, 5)))),
+-                       'red-orange-yellow': SnakeSkin('black', *(
++SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient', 'green', *(
++    list((0, i, 0) for i in range(70, 190, 5)))),
++                       'red-orange-yellow': SnakeSkin('red gradient', 'black', *(
+                                list((i, 0, 0) for i in range(70, 190, 5)) +
+                                list((0, i, 0) for i in range(190, 70, 5)) +
+                                list((0, 0, i) for i in range(190, 70, 5)))),
+-                       'black-white': SnakeSkin('black', *(
++                       'black-white': SnakeSkin('black-white gradient', 'black', *(
+                                list((i, i, i) for i in range(70, 190, 5)) +
+                                list((i, i, i) for i in range(190, 70, -5)))),
+-                       'yellow-cyan': SnakeSkin('red', *(
++                       'yellow-cyan': SnakeSkin('yellow-cyan gradient', 'red', *(
+                                list((i, i, 0) for i in range(70, 190, 10)) +
+                                list((0, i, i) for i in range(190, 70, -10))))
+                        }
+@@ -35,10 +38,7 @@
+ 
+ def get_skin(name):
+     try:
+-        if type(name) == str:
+-            skin = SNAKE_DEFAULT_SKINS[DEFAULT_SKIN]
+-
+-        elif type(name) == int:
++        if type(name) == int:
+             skin = list(SNAKE_DEFAULT_SKINS.values())[name]
+ 
+     except ValueError:
+@@ -53,12 +53,12 @@
+ class SnakeBodySegment:
+     def __init__(self, x=None, y=None):
+         if x is None:
+-            self.x = randint(0, MAX_SNAKE_X)
++            self.x = randint(2, MAX_SNAKE_X - 2)
+         else:
+             self.x = x
+ 
+         if y is None:
+-            self.y = randint(0, MAX_SNAKE_Y)
++            self.y = randint(2, MAX_SNAKE_Y - 2)
+ 
+         else:
+             self.y = y
+@@ -95,7 +95,9 @@
+ 
+         else:
+             self.skin = skin
+-
++        self.hud = SnakeHUD()
++    def getScore(self):
++        return len(self.body)
+     def draw(self, scr):
+         # body = self.body[::-1]
+         for i in range(len(self.body)):
+@@ -115,7 +117,7 @@
+             x = snake_body_segment.x
+             y = snake_body_segment.y
+ 
+-            pg.draw.rect(scr, '#00FF00',
++            pg.draw.rect(scr, 'green',
+                          pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
+ 
+     def dead(self):
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Black\">\r\n    <option name=\"sdkName\" value=\"Python 3.12\" />\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.12\" project-jdk-type=\"Python SDK\" />\r\n</project>
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	
++++ b/.idea/misc.xml	
+@@ -3,5 +3,5 @@
+   <component name="Black">
+     <option name="sdkName" value="Python 3.12" />
+   </component>
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12" project-jdk-type="Python SDK" />
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12 (YandexLiceumSnake) (2)" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
+Index: games/snake_world.py
+===================================================================
+diff --git a/games/snake_world.py b/game/objects/snake/snake_world.py
+rename from games/snake_world.py
+rename to game/objects/snake/snake_world.py
+--- a/games/snake_world.py	
++++ b/game/objects/snake/snake_world.py	
+@@ -1,27 +1,28 @@
+-from additionall.hud import HUD
+-from objects.apple import Apple
+-from games.background import *
+-from games.snake import *
++from game.objects.apples.apple import Apple
++from game.objects.apples.boost_apple import BoostApple
++from game.objects.background import *
++from game.objects.snake.snake import *
++from game.objects.wall import *
+ 
+ 
+ class SnakeWorld:
+     def __init__(self):
+-        self.snakes = []  # Список для хранения объектов змей
+-        self.apples = []  # Список для хранения объектов яблок
+-        self.inGameHud = HUD()  # Создаем HUD для отображения информации во время игры
++
++        self.inGameHud = InfoHUD()  # Создаем HUD для отображения информации во время игры
+         self.bg = GridBackground()  # Создаем объект фона игры
+         self.game_type = None  # Задача для хранения типа игры
+ 
+         # Флаги для отрисовки хитбоксов и спрайтов
+         self.isDrawHitbox = True
+-        self.isDrawSprites = False
++        self.isDrawSprites = True
+ 
+-    def new_game(self, game_type='single', skins=[SnakeSkin('white', 'black', 'white'),
+-                                                  SnakeSkin('red', 'green', 'blue', 'red')]):
+-        # Метод для инициализации новой игры
++    def new_game(self, game_type='single', skins=[]):
++        """Метод для инициализации новой игры"""
+         self.game_type = game_type  # Устанавливаем тип игры
+-        self.snakes = []  # Очищаем список змей
+-        self.apples = [Apple() for i in range(NUMBERS_OF_APPLES)]  # Генерируем яблоки
++        self.snakes = []  # Список для хранения объектов змей
++        self.apples = [Apple() for _ in range(NUMBERS_OF_APPLES)]  # Генерируем яблоки
++        self.boost_apples = [BoostApple() for _ in range(NUMBERS_OF_BOOST_APPLES)]  # Генерируем яблоки
++        self.walls = [Wall(randint(0, MAX_SNAKE_X), randint(0, MAX_SNAKE_Y)) for _ in range(NUMBERS_OF_WALLS)]  # Стены
+ 
+         # Добавляем змеи согласно типу игры
+         if game_type == 'single':
+@@ -39,11 +40,6 @@
+                 return True
+         return False  # Если все змеи мертвы
+ 
+-    def add_random_coords_snake(self):
+-        """Метод для добавления случайных координат для змеи"""
+-        x = randint(0, MAX_SNAKE_X)  # Генерируем случайный X
+-        y = randint(0, MAX_SNAKE_Y)  # Генерируем случайный Y
+-
+     def control_by_keyboard(self, keys):
+         """Метод для управления змеями с помощью клавиатуры"""
+         for snake in self.snakes:
+@@ -59,23 +55,29 @@
+         for snake in self.snakes:
+             snake.try_move_snake()  # Попробовать переместить змею
+ 
+-    def add_apple_to_map(self):
++    def add_apple_to_map(self, isBoost=False):
+         """Метод для добавления яблока на карту, избегая координат змей"""
+-        notAllowCoords = []  # Список недопустимых координат для яблок
++
++        bad_coords = []  # Список недопустимых координат для яблок
++        for wall in self.walls:
++            bad_coords.append((wall.x, wall.y))
+         for snake in self.snakes:
+             for segment in snake.body:
+-                notAllowCoords.append((segment.x, segment.y))  # Добавляем координаты тела змеи
++                bad_coords.append((segment.x, segment.y))  # Добавляем координаты тела змеи
+ 
+         while True:
+             """Генерация случайных координат для яблока"""
+             apple_x, apple_y = randint(0, MAX_SNAKE_X), randint(0, MAX_SNAKE_Y)
+-            if (apple_x, apple_y) not in notAllowCoords:
+-                self.apples.append(Apple(apple_x, apple_y))  # Добавляем яблоко, если координаты допустимы
++            if (apple_x, apple_y) not in bad_coords:
++                if isBoost:
++                    self.apples.append(BoostApple(apple_x, apple_y))  # Добавляем яблоко, если координаты допустимы
++                else:
++                    self.apples.append(Apple(apple_x, apple_y))  # Добавляем яблоко, если координаты допустимы
+                 break  # Выход из цикла
+ 
+     def check_snakes_eat_apples(self):
+         """Метод для проверки, съели ли змеи яблоки"""
+-        add_apples_count = 0  # Счетчик добавленных яблок
++        add_apples_count = add_boost_apples_count = 0  # Счетчик добавленных яблок
+         for snake in self.snakes:
+             head_x, head_y = snake.body[0].x, snake.body[0].y  # Получаем координаты головы змеи
+             for apple in self.apples:
+@@ -84,22 +86,35 @@
+                     self.apples.remove(apple)  # Удаляем яблоко из списка
+                     add_apples_count += 1  # Увеличиваем счетчик
+                     break  # Выход из внутреннего цикла, чтобы не проверять остальные яблоки
++
++            for boost_apple in self.boost_apples:
++                if head_x == boost_apple.x and head_y == boost_apple.y:  # Если змея съела яблоко
++                    snake.add_segment(boost_apple.size)  # Увеличиваем змею на размер яблока
++                    self.boost_apples.remove(boost_apple)  # Удаляем яблоко из списка
++                    add_boost_apples_count += 1  # Увеличиваем счетчик
++                    break  # Выход из внутреннего цикла, чтобы не проверять остальные яблоки
+ 
+         # Добавляем новые яблоки на карту по количеству съеденных
+         for i in range(add_apples_count):
+             self.add_apple_to_map()
+-
++        for i in range(add_boost_apples_count):
++            self.add_apple_to_map(isBoost=True)
+     def check_snakes_dead(self):
+         """Метод для проверки, мертвы ли змеи"""
+-        deadCoords = []  # Список координат тела змей
++
++        deadCoords = []  # Список координат тела змей и стен
+         for snake in self.snakes:
+             for segment in snake.body:
+                 deadCoords.append((segment.x, segment.y))  # Добавляем координаты тела
++        for wall in self.walls:
++            deadCoords.append((wall.x, wall.y))
+ 
+-        deadSnakeList = []  # Список для мертвых змей
+         for snake in self.snakes:
+-            if len(snake.body) > 2 and snake.alive:  # Проверяем, жива ли змея и имеет ли она более 2 сегментов
+-                head = (snake.body[0].x, snake.body[0].y)  # Получаем координаты головы
++            head = (snake.body[0].x, snake.body[0].y)  # Получаем координаты головы
++            if head[0] < 0 or head[1] < 0 or head[0] >= MAX_SNAKE_X or head[
++                1] >= MAX_SNAKE_Y:  # Проверяем столкновение со стенами
++                snake.dead()
++            if len(snake.body) > 2 and snake.alive:  # Проверяем, жива ли змея и имеет ли она более 2 сегментов
+                 numberOfColision = 0  # Счетчик столкновений
+ 
+                 for coords in deadCoords:
+@@ -107,17 +122,33 @@
+                         numberOfColision += 1
+ 
+                 if numberOfColision > 1:  # Если есть несколько пересечений
+-                    print('dead!!!')  # Сообщаем, что змея мертва
+-                    deadSnakeList.append(snake)  # Добавляем змею в список мертвых
+                     snake.dead()  # Вызываем метод, чтобы отметить змею как мертвую
+ 
+-    def draw(self, scr):
++    def draw(self, scr, fps):
+         """Метод для отрисовки мира змей"""
+         self.bg.draw(scr)  # Отрисовываем фон
+-        for snake in self.snakes:
+-            snake.draw(scr)  # Отрисовываем каждую змею
++        for snake in self.snakes + self.apples + self.boost_apples + self.walls:
++            if self.isDrawSprites:
++                snake.draw(scr)  # Отрисовываем каждую змею
++            if self.isDrawHitbox:
++                snake.draw_hitbox(scr)  # Отрисовываем хитбокс
+ 
+-        for apple in self.apples:
+-            apple.draw(scr)  # Отрисовываем каждое яблоко
++        # for apple in self.apples:
++        #     if self.isDrawSprites:
++        #         apple.draw(scr)  # Отрисовываем каждое яблоко
++        #     if self.isDrawHitbox:
++        #         apple.draw_hitbox(scr) # Отрисовываем хитбокс
++        #
++        # for wall in self.walls:
++        #     if self.isDrawSprites:
++        #         wall.draw(scr)
++        #     if self.isDrawHitbox:
++        #         wall.draw_hitbox(scr)
++        #
++        # for boost_apple in self.boost_apples:
++        #     if self.isDrawSprites:
++        #         boost_apple.draw(scr)
++        #     if self.isDrawHitbox:
++        #         boost_apple.draw_hitbox(scr)
+ 
+-        self.inGameHud.draw(scr)  # Отрисовываем интерфейс HUD
++        self.inGameHud.draw(scr, *self.snakes, fps=fps)  # Отрисовываем интерфейс HUD

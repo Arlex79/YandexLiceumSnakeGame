@@ -1,6 +1,7 @@
 from game.additional.settings import *
 from random import randint
 
+
 class BoostApple:
     image = pg.image.load(BOOST_APPLE_IMG_PATH)
     image = pg.transform.scale(image, (TILE, TILE))

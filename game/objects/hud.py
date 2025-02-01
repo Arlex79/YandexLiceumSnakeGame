@@ -42,5 +42,3 @@ class SnakeHUD(HUD):
 
     def draw(self, scr):
         self.draw_multiline_text(scr, '''Snake hud''')
-
-

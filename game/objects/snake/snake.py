@@ -38,7 +38,7 @@ SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient', 'green', *(
 
 def get_skin(name):
     try:
-        if type(name) == int:
+        if type(name) is int:
             skin = list(SNAKE_DEFAULT_SKINS.values())[name]
 
     except ValueError:
@@ -87,17 +87,19 @@ class Snake:
         self.tick_last_time = time()
 
         if skin is None:
-            if type(DEFAULT_SKIN) == str:
+            if type(DEFAULT_SKIN) is str:
                 self.skin = SNAKE_DEFAULT_SKINS[DEFAULT_SKIN]
 
-            elif type(DEFAULT_SKIN) == int:
+            elif type(DEFAULT_SKIN) is int:
                 self.skin = list(SNAKE_DEFAULT_SKINS.values())[DEFAULT_SKIN]
 
         else:
             self.skin = skin
         self.hud = SnakeHUD()
+
     def getScore(self):
         return len(self.body)
+
     def draw(self, scr):
         # body = self.body[::-1]
         for i in range(len(self.body)):
@@ -172,6 +174,6 @@ class Snake:
                 new_dx = 1
                 new_dy = 0
 
-            if not new_dx is None and not new_dy is None and new_dx != self.dx * -1 and new_dy != self.dy * -1:
+            if new_dx is not None and new_dy is not None and new_dx != self.dx * -1 and new_dy != self.dy * -1:
                 self.dx = new_dx
                 self.dy = new_dy

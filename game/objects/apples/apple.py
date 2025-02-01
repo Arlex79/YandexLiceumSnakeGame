@@ -5,10 +5,8 @@ from random import randint
 class Apple:
     image = pg.image.load(APPLE_IMG_PATH)
     image = pg.transform.scale(image, (TILE, TILE))
+
     def __init__(self, x=None, y=None, size=1, color=APPLE_COLOR):
-
-
-
         if x is None:
             self.x = randint(0, MAX_SNAKE_X - 1)
         else:

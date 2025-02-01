@@ -1,0 +1,360 @@
+Index: game/objects/background.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from game.additional.settings import *\r\nimport pygame as pg\r\n\r\n\r\nclass Background:\r\n    def __init__(self, color='#333d48', image_filename=None):\r\n        self.color = color\r\n        self.image_filename = image_filename\r\n\r\n    def draw(self, scr):\r\n        scr.fill(self.color)\r\n\r\n\r\nclass GridBackground(Background):\r\n    def __init__(self, color='#333333', image_filename=None, grid_size=TILE, grid_color=GRID_COLOR, grid_width=1):\r\n        super().__init__(color, image_filename)\r\n        self.grid_size = grid_size\r\n        self.grid_color = grid_color\r\n        self.grid_width = grid_width\r\n\r\n    def draw(self, scr):\r\n        super().draw(scr)\r\n        for x in range(0, X_SIZE, self.grid_size):\r\n            pg.draw.line(scr, self.grid_color, [x, 0], [x, Y_SIZE], self.grid_width)\r\n\r\n        for y in range(0, Y_SIZE, self.grid_size):\r\n            pg.draw.line(scr, self.grid_color, [0, y], [X_SIZE, y], self.grid_width)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/objects/background.py b/game/objects/background.py
+--- a/game/objects/background.py	(revision 64b7b078825b910d6442b368fe9810aabc6ee750)
++++ b/game/objects/background.py	(date 1738421726456)
+@@ -4,21 +4,25 @@
+ 
+ class Background:
+     def __init__(self, color='#333d48', image_filename=None):
++        # Инициализация фона с указанным цветом и файлом изображения.
+         self.color = color
+         self.image_filename = image_filename
+ 
+     def draw(self, scr):
++        # Заполняет поверхность указанным цветом.
+         scr.fill(self.color)
+ 
+ 
+ class GridBackground(Background):
+     def __init__(self, color='#333333', image_filename=None, grid_size=TILE, grid_color=GRID_COLOR, grid_width=1):
++        # Инициализация фона с сеткой.
+         super().__init__(color, image_filename)
+         self.grid_size = grid_size
+         self.grid_color = grid_color
+         self.grid_width = grid_width
+ 
+     def draw(self, scr):
++        # Рисует фон и сетку на заданной поверхности.
+         super().draw(scr)
+         for x in range(0, X_SIZE, self.grid_size):
+             pg.draw.line(scr, self.grid_color, [x, 0], [x, Y_SIZE], self.grid_width)
+Index: game/objects/hud.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from time import time\r\nfrom game.additional.settings import *\r\n\r\n\r\nclass HUD:\r\n    def __init__(self):\r\n        self.start_time = time()\r\n        self.font = pg.font.SysFont(None, DEFAULT_FONT_SIZE)\r\n\r\n    def draw_text(self, scr, text, x=0, y=0, color='white', size=DEFAULT_FONT_SIZE, font_type='Courier New'):\r\n        font = pg.font.SysFont(None, size)\r\n        img = font.render(text, True, color)\r\n        scr.blit(img, (x, y))\r\n\r\n    def draw_multiline_text(self, scr, text):\r\n        spl_text = text.split('\\n')\r\n        for i in range(len(spl_text)):\r\n            self.draw_text(scr, str(spl_text[i]),  10, (FONT_HEIGHT_SPACE * i) + FIRST_LINE_SPACE,\r\n                           color='white')\r\n\r\n    def draw(self, scr):\r\n        pass\r\n\r\n\r\nclass InfoHUD(HUD):\r\n    def __init__(self):\r\n        super().__init__()\r\n\r\n    def draw(self, scr,  snake1, snake2=None, fps=None):\r\n        snake1text = f\"Змея 1 (wasd): {snake1.getScore()}\"\r\n        if not snake2 is None:\r\n            snake2text= f\"Змея 2 (стрелки): {snake2.getScore()}\"\r\n        else:\r\n            snake2text = \"\"\r\n        self.draw_multiline_text(scr, f'''Игра Змейка FPS: {fps}\r\n{snake1text}\r\n{snake2text}''')\r\n\r\nclass SnakeHUD(HUD):\r\n    def __init__(self):\r\n        super().__init__()\r\n\r\n    def draw(self, scr):\r\n        self.draw_multiline_text(scr, '''Snake hud''')\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/objects/hud.py b/game/objects/hud.py
+--- a/game/objects/hud.py	(revision 64b7b078825b910d6442b368fe9810aabc6ee750)
++++ b/game/objects/hud.py	(date 1738421602530)
+@@ -4,43 +4,49 @@
+ 
+ class HUD:
+     def __init__(self):
++        # Инициализация HUD с временем начала и шрифтом.
+         self.start_time = time()
+         self.font = pg.font.SysFont(None, DEFAULT_FONT_SIZE)
+ 
+     def draw_text(self, scr, text, x=0, y=0, color='white', size=DEFAULT_FONT_SIZE, font_type='Courier New'):
++        # Рисует текст на заданной поверхности по указанным координатам.
+         font = pg.font.SysFont(None, size)
+         img = font.render(text, True, color)
+         scr.blit(img, (x, y))
+ 
+     def draw_multiline_text(self, scr, text):
++        # Рисует многострочный текст на заданной поверхности.
+         spl_text = text.split('\n')
+         for i in range(len(spl_text)):
+-            self.draw_text(scr, str(spl_text[i]),  10, (FONT_HEIGHT_SPACE * i) + FIRST_LINE_SPACE,
+-                           color='white')
++            self.draw_text(scr, str(spl_text[i]), 10, (FONT_HEIGHT_SPACE * i) + FIRST_LINE_SPACE, color='white')
+ 
+     def draw(self, scr):
++        # Метод для рисования HUD
+         pass
+ 
+ 
+ class InfoHUD(HUD):
+     def __init__(self):
++        # Инициализация InfoHUD.
+         super().__init__()
+ 
+-    def draw(self, scr,  snake1, snake2=None, fps=None):
++    def draw(self, scr, snake1, snake2=None, fps=None):
++        # Рисует информацию о змеях и FPS на заданной поверхности.
+         snake1text = f"Змея 1 (wasd): {snake1.getScore()}"
+-        if not snake2 is None:
+-            snake2text= f"Змея 2 (стрелки): {snake2.getScore()}"
++        if snake2 is not None:
++            snake2text = f"Змея 2 (стрелки): {snake2.getScore()}"
+         else:
+             snake2text = ""
+         self.draw_multiline_text(scr, f'''Игра Змейка FPS: {fps}
+ {snake1text}
+ {snake2text}''')
+ 
++
+ class SnakeHUD(HUD):
+     def __init__(self):
++        # Инициализация SnakeHUD.
+         super().__init__()
+ 
+     def draw(self, scr):
++        # Рисует текст "Snake hud" на заданной поверхности.
+         self.draw_multiline_text(scr, '''Snake hud''')
+-
+-
+Index: game/objects/wall.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from game.additional.settings import *\r\nfrom random import randint\r\n\r\n\r\nclass Wall:\r\n    def __init__(self, x=None, y=None, size=1, color=WALL_COLOR):\r\n        if x is None:\r\n            self.x = randint(0, MAX_SNAKE_X - 1)\r\n        else:\r\n            self.x = x\r\n        if y is None:\r\n            self.y = randint(0, MAX_SNAKE_Y - 1)\r\n        else:\r\n            self.y = y\r\n\r\n        self.size = size\r\n        self.color = color\r\n\r\n    def draw(self, scr):\r\n\r\n        pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE))\r\n    def draw_hitbox(self, scr):\r\n        pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE), 1)\r\n\r\n    def get_position(self):\r\n        return self.x, self.y\r\n\r\n    def is_collided(self, snake_head):\r\n        return self.x == snake_head.x and self.y == snake_head.y\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/objects/wall.py b/game/objects/wall.py
+--- a/game/objects/wall.py	(revision 64b7b078825b910d6442b368fe9810aabc6ee750)
++++ b/game/objects/wall.py	(date 1738421402871)
+@@ -4,6 +4,7 @@
+ 
+ class Wall:
+     def __init__(self, x=None, y=None, size=1, color=WALL_COLOR):
++        # Инициализация объекта стены с координатами, размером и цветом.
+         if x is None:
+             self.x = randint(0, MAX_SNAKE_X - 1)
+         else:
+@@ -17,13 +18,17 @@
+         self.color = color
+ 
+     def draw(self, scr):
+-
++        # Рисует стену на переданной поверхности.
+         pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE))
++
+     def draw_hitbox(self, scr):
++        # Рисует хитбокс для стены на переданной поверхности.
+         pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE), 1)
+ 
+     def get_position(self):
++        # Возвращает текущие координаты стены.
+         return self.x, self.y
+ 
+     def is_collided(self, snake_head):
++        # Проверяет, произошло ли столкновение с головой змеи.
+         return self.x == snake_head.x and self.y == snake_head.y
+Index: game/objects/snake/snake.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from copy import copy\r\nfrom random import randint\r\nfrom game.objects.hud import *\r\n\r\n\r\nclass SnakeSkin:\r\n    def __init__(self, name, head='white', *body):\r\n        self.head = head\r\n        self.body = body\r\n        self.name = name\r\n\r\n    def __str__(self):\r\n        return str(self.name)\r\n\r\n    def get_color_for_index(self, index):\r\n        assert index >= 0\r\n        if index == 0:\r\n            return self.head\r\n\r\n        else:\r\n            return self.body[index % len(self.body)]\r\n\r\n\r\nSNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient', 'green', *(\r\n    list((0, i, 0) for i in range(70, 190, 5)))),\r\n                       'red-orange-yellow': SnakeSkin('red gradient', 'black', *(\r\n                               list((i, 0, 0) for i in range(70, 190, 5)) +\r\n                               list((0, i, 0) for i in range(190, 70, 5)) +\r\n                               list((0, 0, i) for i in range(190, 70, 5)))),\r\n                       'black-white': SnakeSkin('black-white gradient', 'black', *(\r\n                               list((i, i, i) for i in range(70, 190, 5)) +\r\n                               list((i, i, i) for i in range(190, 70, -5)))),\r\n                       'yellow-cyan': SnakeSkin('yellow-cyan gradient', 'red', *(\r\n                               list((i, i, 0) for i in range(70, 190, 10)) +\r\n                               list((0, i, i) for i in range(190, 70, -10))))\r\n                       }\r\n\r\n\r\ndef get_skin(name):\r\n    try:\r\n        if type(name) == int:\r\n            skin = list(SNAKE_DEFAULT_SKINS.values())[name]\r\n\r\n    except ValueError:\r\n        skin = SnakeSkin('green', 'green')\r\n\r\n    except IndexError:\r\n        skin = list(SNAKE_DEFAULT_SKINS.values())[(len(SNAKE_DEFAULT_SKINS) - 1) % name]\r\n\r\n    return skin\r\n\r\n\r\nclass SnakeBodySegment:\r\n    def __init__(self, x=None, y=None):\r\n        if x is None:\r\n            self.x = randint(2, MAX_SNAKE_X - 2)\r\n        else:\r\n            self.x = x\r\n\r\n        if y is None:\r\n            self.y = randint(2, MAX_SNAKE_Y - 2)\r\n\r\n        else:\r\n            self.y = y\r\n\r\n\r\nclass Snake:\r\n    def __init__(self, body=None, skin=None, control_scheme=WASD_CONTROL_SCHEME):\r\n        self.control_scheme = control_scheme\r\n        self.alive = True\r\n        if randint(0, 1):\r\n            self.dx = choice((-1, 1))\r\n            self.dy = 0\r\n\r\n        else:\r\n            self.dx = 0\r\n            self.dy = choice((-1, 1))\r\n        self.body = []\r\n        if body is None:\r\n            first = SnakeBodySegment()\r\n            self.body.append(first)\r\n            self.body.append(SnakeBodySegment(first.x - self.dx, first.y - self.dy))\r\n\r\n        else:\r\n            self.body = body\r\n\r\n        self.tick_last_time = time()\r\n\r\n        if skin is None:\r\n            if type(DEFAULT_SKIN) == str:\r\n                self.skin = SNAKE_DEFAULT_SKINS[DEFAULT_SKIN]\r\n\r\n            elif type(DEFAULT_SKIN) == int:\r\n                self.skin = list(SNAKE_DEFAULT_SKINS.values())[DEFAULT_SKIN]\r\n\r\n        else:\r\n            self.skin = skin\r\n        self.hud = SnakeHUD()\r\n    def getScore(self):\r\n        return len(self.body)\r\n    def draw(self, scr):\r\n        # body = self.body[::-1]\r\n        for i in range(len(self.body)):\r\n            snake_body_segment = self.body[i]\r\n            x = snake_body_segment.x\r\n            y = snake_body_segment.y\r\n\r\n            pg.draw.rect(scr, self.skin.get_color_for_index(i),\r\n                         pg.Rect(TILE * x, TILE * y, TILE, TILE))\r\n\r\n            pg.draw.rect(scr, self.skin.get_color_for_index(0),\r\n                         pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)\r\n\r\n    def draw_hitbox(self, scr):\r\n        for i in range(len(self.body)):\r\n            snake_body_segment = self.body[i]\r\n            x = snake_body_segment.x\r\n            y = snake_body_segment.y\r\n\r\n            pg.draw.rect(scr, 'green',\r\n                         pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)\r\n\r\n    def dead(self):\r\n        self.alive = False\r\n        self.dead_time = time()\r\n\r\n    def move(self):\r\n        head = self.body[0]\r\n        del self.body[-1]\r\n\r\n        self.body.insert(0, SnakeBodySegment(head.x + self.dx, head.y + self.dy))\r\n\r\n    def get_move_timeout(self):\r\n        return SNAKE_SLOWLY_MOVE_TIMEOUT\r\n\r\n    def try_move_snake(self):\r\n        if self.alive:\r\n            now_ms = time()\r\n\r\n            if (now_ms - self.tick_last_time) > self.get_move_timeout():\r\n                self.tick_last_time = now_ms\r\n                self.move()\r\n\r\n    def add_segment(self, count=1):\r\n        try:\r\n            nasloyenie = self.body[0] == self.body[1]\r\n\r\n        except IndexError:\r\n            nasloyenie = False\r\n        if self.alive and (len(self.body) >= 2 or len(self.body) == 1) and not nasloyenie:\r\n\r\n            for i in range(count):\r\n                snake_end = self.body[-1]\r\n                self.body.append(copy(snake_end))\r\n\r\n    def control(self, keys):\r\n        if self.alive:\r\n            new_dx, new_dy = None, None\r\n            if keys[self.control_scheme['up']]:\r\n                new_dx = 0\r\n                new_dy = -1\r\n\r\n            if keys[self.control_scheme['down']]:\r\n                new_dx = 0\r\n                new_dy = 1\r\n\r\n            if keys[self.control_scheme['left']]:\r\n                new_dx = -1\r\n                new_dy = 0\r\n\r\n            if keys[self.control_scheme['right']]:\r\n                new_dx = 1\r\n                new_dy = 0\r\n\r\n            if not new_dx is None and not new_dy is None and new_dx != self.dx * -1 and new_dy != self.dy * -1:\r\n                self.dx = new_dx\r\n                self.dy = new_dy\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/objects/snake/snake.py b/game/objects/snake/snake.py
+--- a/game/objects/snake/snake.py	(revision 64b7b078825b910d6442b368fe9810aabc6ee750)
++++ b/game/objects/snake/snake.py	(date 1738421847925)
+@@ -1,49 +1,52 @@
+ from copy import copy
+-from random import randint
++from random import randint, choice
+ from game.objects.hud import *
++from time import time
+ 
+ 
+ class SnakeSkin:
+     def __init__(self, name, head='white', *body):
++        # Инициализация текстуры змеи с цветом головы и телом.
+         self.head = head
+         self.body = body
+         self.name = name
+ 
+     def __str__(self):
++        # Возвращает строковое представление текстуры змеи.
+         return str(self.name)
+ 
+     def get_color_for_index(self, index):
++        # Возвращает цвет для заданного индекса сегмента.
+         assert index >= 0
+         if index == 0:
+             return self.head
+-
+         else:
+             return self.body[index % len(self.body)]
+ 
+ 
+-SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient', 'green', *(
+-    list((0, i, 0) for i in range(70, 190, 5)))),
+-                       'red-orange-yellow': SnakeSkin('red gradient', 'black', *(
+-                               list((i, 0, 0) for i in range(70, 190, 5)) +
+-                               list((0, i, 0) for i in range(190, 70, 5)) +
+-                               list((0, 0, i) for i in range(190, 70, 5)))),
+-                       'black-white': SnakeSkin('black-white gradient', 'black', *(
+-                               list((i, i, i) for i in range(70, 190, 5)) +
+-                               list((i, i, i) for i in range(190, 70, -5)))),
+-                       'yellow-cyan': SnakeSkin('yellow-cyan gradient', 'red', *(
+-                               list((i, i, 0) for i in range(70, 190, 10)) +
+-                               list((0, i, i) for i in range(190, 70, -10))))
+-                       }
++SNAKE_DEFAULT_SKINS = {
++    'green': SnakeSkin('green gradient', 'green', *(
++        list((0, i, 0) for i in range(70, 190, 5)))),
++    'red-orange-yellow': SnakeSkin('red gradient', 'black', *(
++        list((i, 0, 0) for i in range(70, 190, 5)) +
++             list((0, i, 0) for i in range(190, 70, 5)) +
++             list((0, 0, i) for i in range(190, 70, 5)))),
++    'black-white': SnakeSkin('black-white gradient', 'black', *(
++        list((i, i, i) for i in range(70, 190, 5)) +
++             list((i, i, i) for i in range(190, 70, -5)))),
++    'yellow-cyan': SnakeSkin('yellow-cyan gradient', 'red', *(
++        list((i, i, 0) for i in range(70, 190, 10)) +
++             list((0, i, i) for i in range(190, 70, -10))))
++}
+ 
+ 
+ def get_skin(name):
++    # Возвращает текстуру змеи по имени или индексу.
+     try:
+         if type(name) == int:
+             skin = list(SNAKE_DEFAULT_SKINS.values())[name]
+-
+     except ValueError:
+         skin = SnakeSkin('green', 'green')
+-
+     except IndexError:
+         skin = list(SNAKE_DEFAULT_SKINS.values())[(len(SNAKE_DEFAULT_SKINS) - 1) % name]
+ 
+@@ -52,6 +55,7 @@
+ 
+ class SnakeBodySegment:
+     def __init__(self, x=None, y=None):
++        # Инициализация сегмента тела змеи с заданными координатами.
+         if x is None:
+             self.x = randint(2, MAX_SNAKE_X - 2)
+         else:
+@@ -59,28 +63,27 @@
+ 
+         if y is None:
+             self.y = randint(2, MAX_SNAKE_Y - 2)
+-
+         else:
+             self.y = y
+ 
+ 
+ class Snake:
+     def __init__(self, body=None, skin=None, control_scheme=WASD_CONTROL_SCHEME):
++        # Инициализация змеи с телом, текстурой и схемой управления.
+         self.control_scheme = control_scheme
+         self.alive = True
+         if randint(0, 1):
+             self.dx = choice((-1, 1))
+             self.dy = 0
+-
+         else:
+             self.dx = 0
+             self.dy = choice((-1, 1))
++
+         self.body = []
+         if body is None:
+             first = SnakeBodySegment()
+             self.body.append(first)
+             self.body.append(SnakeBodySegment(first.x - self.dx, first.y - self.dy))
+-
+         else:
+             self.body = body
+ 
+@@ -89,17 +92,19 @@
+         if skin is None:
+             if type(DEFAULT_SKIN) == str:
+                 self.skin = SNAKE_DEFAULT_SKINS[DEFAULT_SKIN]
+-
+             elif type(DEFAULT_SKIN) == int:
+                 self.skin = list(SNAKE_DEFAULT_SKINS.values())[DEFAULT_SKIN]
+-
+-        else:
+-            self.skin = skin
++            else:
++                self.skin = skin
++
+         self.hud = SnakeHUD()
++
+     def getScore(self):
++        # Возвращает текущий счёт змеи (количество сегментов).
+         return len(self.body)
++
+     def draw(self, scr):
+-        # body = self.body[::-1]
++        # Рисует змею на заданной поверхности.
+         for i in range(len(self.body)):
+             snake_body_segment = self.body[i]
+             x = snake_body_segment.x
+@@ -112,6 +117,7 @@
+                          pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
+ 
+     def draw_hitbox(self, scr):
++        # Рисует хитбокс для сегментов тела змеи.
+         for i in range(len(self.body)):
+             snake_body_segment = self.body[i]
+             x = snake_body_segment.x
+@@ -121,57 +127,57 @@
+                          pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
+ 
+     def dead(self):
++        # Устанавливает статус змеи как мёртвый.
+         self.alive = False
+         self.dead_time = time()
+ 
+     def move(self):
++        # Перемещает змею в текущем направлении.
+         head = self.body[0]
+         del self.body[-1]
+-
+         self.body.insert(0, SnakeBodySegment(head.x + self.dx, head.y + self.dy))
+ 
+     def get_move_timeout(self):
++        # Возвращает временной интервал для перемещения змеи.
+         return SNAKE_SLOWLY_MOVE_TIMEOUT
+ 
+     def try_move_snake(self):
++        # Пытается переместить змею, если она жива.
+         if self.alive:
+             now_ms = time()
+-
+             if (now_ms - self.tick_last_time) > self.get_move_timeout():
+                 self.tick_last_time = now_ms
+                 self.move()
+ 
+     def add_segment(self, count=1):
++        # Добавляет сегменты тела змеи.
+         try:
+-            nasloyenie = self.body[0] == self.body[1]
+-
++            layering = self.body[0] == self.body[1]
+         except IndexError:
+-            nasloyenie = False
+-        if self.alive and (len(self.body) >= 2 or len(self.body) == 1) and not nasloyenie:
++            layering = False
+ 
++        if self.alive and (len(self.body) >= 2 or len(self.body) == 1) and not layering:
+             for i in range(count):
+                 snake_end = self.body[-1]
+                 self.body.append(copy(snake_end))
+ 
+     def control(self, keys):
++        # Обрабатывает управление змеёй с помощью клавиатуры.
+         if self.alive:
+             new_dx, new_dy = None, None
+             if keys[self.control_scheme['up']]:
+                 new_dx = 0
+                 new_dy = -1
+-
+             if keys[self.control_scheme['down']]:
+                 new_dx = 0
+                 new_dy = 1
+-
+             if keys[self.control_scheme['left']]:
+                 new_dx = -1
+                 new_dy = 0
+-
+             if keys[self.control_scheme['right']]:
+                 new_dx = 1
+                 new_dy = 0
+ 
+-            if not new_dx is None and not new_dy is None and new_dx != self.dx * -1 and new_dy != self.dy * -1:
++            if new_dx is not None and new_dy is not None and new_dx != self.dx * -1 and new_dy != self.dy * -1:
+                 self.dx = new_dx
+                 self.dy = new_dy

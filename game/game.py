@@ -7,8 +7,6 @@ import sqlite3
 from datetime import datetime as dt
 
 
-
-
 class Game:
     def __init__(self):
         pg.init()
@@ -31,6 +29,8 @@ class Game:
 
         self.singleplayer_records = []
         self.dualplayer_records = []
+        self.load_records()
+
     def get_time(self):
         time = dt.now()
         return time.strftime("%H:%M %d.%m.%Y")
@@ -39,15 +39,16 @@ class Game:
         self.singleplayer_records = []
         self.dualplayer_records = []
         cur = self.db_con.cursor()
-        result_singleplayer = cur.execute("""SELECT * FROM singleplayer
+        result_singleplayer = cur.execute("""SELECT * FROM singleplayer ORDER BY score DESC
         """).fetchall()
         for elem in result_singleplayer:
             self.singleplayer_records.append(elem)
 
-        result_dualplayer = cur.execute("""SELECT * FROM dualplayer
+        result_dualplayer = cur.execute("""SELECT * FROM dualplayer ORDER BY score1 + score2 DESC
         """).fetchall()
         for elem in result_dualplayer:
             self.dualplayer_records.append(elem)
+
     def log_record(self, game_type='single', score1=0, score2=0):
         time_now = self.get_time()
         cur = self.db_con.cursor()
@@ -78,13 +79,11 @@ class Game:
 
         self.update_skins()
 
-
     def write_settings(self):
         import csv
         with open(self.csv_settings_file_path, 'w', newline='') as f:
             writer = csv.writer(f, delimiter="=")
             writer.writerows([["player1skin", self.skins_ids[0]], ["player2skin", self.skins_ids[1]]])
-
 
     def new_game(self, game_type='single'):  # type = single / dual
         self.running = True
@@ -114,17 +113,26 @@ class Game:
             self.draw_multiline_text(text)
         elif self.state == "records view":
             self.inMenuBg.draw(self.scr)
-            text = '''Просмотр игровых рекордов
-            Однопользовательская игра:
-            
-            Двупользовательская игра:
-            
+            singleplayers = ""
+            for i, v in enumerate(self.singleplayer_records[:10]):
+                singleplayers += f"{str(i + 1).rjust(2)}. {v[1]} - {v[2]}\n"
+            dualplayers = ""
+            for i, v in enumerate(self.dualplayer_records[:10]):
+                dualplayers += f"{str(i + 1).rjust(2)}. {v[1]} - {v[2]}:{v[3]}\n"
+            text = f'''Просмотр игровых рекордов
+Нажмите Q для возврата в главное меню
+
+Однопользовательская игра:
+{singleplayers}
+Двупользовательская игра:
+{dualplayers}
+
             '''
             self.draw_multiline_text(text)
         elif self.state == 'main menu':
             self.inMenuBg.draw(self.scr)
             text = f"""Змейка
-            
+
 Нажмите 1 или 2 для выбора количества игроков
 Нажмите пробел чтобы играть
 Нажмите E для просмотра рекордов
@@ -159,7 +167,6 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
             self.snake_world.check_snakes_eat_apples()
             self.snake_world.check_snakes_dead()
 
-
     def game_over(self):
         self.state = 'game over'
 
@@ -181,24 +188,48 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
             self.log_record(self.activeGameType,
                             self.snake_world.snakes[0].getScore(),
                             self.snake_world.snakes[1].getScore())
+        self.load_records()
+
     def mainloop(self):
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.running = False
-                elif (event.type == pg.KEYDOWN):
+                elif event.type == pg.KEYDOWN:
                     if self.state == 'main menu':
-
-                        if (event.key == pg.K_w):
+                        if event.key == pg.K_w:
                             self.try_edit_skin(0, 1)
 
-                        elif (event.key == pg.K_s):
+                        elif event.key == pg.K_s:
                             self.try_edit_skin(0, -1)
-                        if (event.key == pg.K_UP):
+                        if event.key == pg.K_UP:
                             self.try_edit_skin(1, 1)
 
-                        elif (event.key == pg.K_DOWN):
+                        elif event.key == pg.K_DOWN:
                             self.try_edit_skin(1, -1)
+
+                    if self.state == 'main menu':
+                        if event.key == pg.K_e:
+                            self.state = 'records view'
+
+                        elif event.key == pg.K_1:
+                            self.activeGameType = 'single'
+
+                        elif event.key == pg.K_2:
+                            self.activeGameType = 'dual'
+
+
+                        elif event.key == pg.K_q:
+                            self.running = False
+
+                    elif self.state == 'game over':
+                        if event.key == pg.K_q:
+                            self.state = 'main menu'
+
+                    if self.state == 'records view':
+                        if event.key == pg.K_q:
+                            self.state = 'main menu'
+
             keys = pg.key.get_pressed()
             self.one_tick()
 
@@ -219,29 +250,17 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
                 else:
                     self.state = 'game over'
                     self.finish_game()
+
             elif self.state == 'records view':
                 pass
 
             elif self.state == 'game over':
-                if keys[pg.K_q]:
-                    self.state = 'main menu'
-
-                elif keys[pg.K_SPACE]:
+                if keys[pg.K_SPACE]:
                     self.new_game(self.activeGameType)
 
             elif self.state == 'main menu':
                 if keys[pg.K_SPACE]:
                     self.new_game(self.activeGameType)
-
-                elif keys[pg.K_1]:
-                    self.activeGameType = 'single'
-
-                elif keys[pg.K_2]:
-                    self.activeGameType = 'dual'
-
-
-                elif keys[pg.K_ESCAPE]:
-                    self.running = False
 
             self.draw()
 
