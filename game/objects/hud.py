@@ -36,6 +36,7 @@ class InfoHUD(HUD):
 {snake1text}
 {snake2text}''')
 
+
 class SnakeHUD(HUD):
     def __init__(self):
         super().__init__()
