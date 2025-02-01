@@ -6,7 +6,7 @@ class BoostApple:
     image = pg.image.load(BOOST_APPLE_IMG_PATH)
     image = pg.transform.scale(image, (TILE, TILE))
 
-    def __init__(self, x=None, y=None, size=5, color=BOOST_APPLE_COLOR, boost='speed'):
+    def __init__(self, x=None, y=None, the_size=5, color=BOOST_APPLE_COLOR, boost='speed'):
         if x is None:
             self.x = randint(0, MAX_SNAKE_X - 1)
         else:
@@ -16,7 +16,7 @@ class BoostApple:
         else:
             self.y = y
         self.boost = boost
-        self.size = size
+        self.size = the_size
         self.color = color
 
     def draw(self, scr):

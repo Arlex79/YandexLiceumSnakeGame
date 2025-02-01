@@ -24,7 +24,6 @@ class Game:
         self.activeGameType = 'single'
         self.csv_settings_file_path = "game/additional/settings.csv"
         self.read_settings()
-
         self.db_con = sqlite3.connect("game/game_records.sqlite")
 
         self.singleplayer_records = []
