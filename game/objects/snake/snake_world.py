@@ -62,7 +62,7 @@ class SnakeWorld:
                 bad_coords.append((segment.x, segment.y))
 
         while True:
-            """Генерация случайных координат для яблока"""
+            # Генерация случайных координат для яблока.
             apple_x, apple_y = randint(0, MAX_SNAKE_X), randint(0, MAX_SNAKE_Y)
             if (apple_x, apple_y) not in bad_coords:
                 if isBoost:

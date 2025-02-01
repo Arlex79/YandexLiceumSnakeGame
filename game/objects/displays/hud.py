@@ -7,9 +7,9 @@ class HUD:
         self.start_time = time()
         self.font = pg.font.SysFont(None, DEFAULT_FONT_SIZE)
 
-    def draw_text(self, scr, text, x=0, y=0, color='white', size=DEFAULT_FONT_SIZE, font_type='Courier New'):
+    def draw_text(self, scr, text, x=0, y=0, color='white', the_size=DEFAULT_FONT_SIZE, font_type='Courier New'):
         """Рисует текст на заданной поверхности."""
-        font = pg.font.SysFont(None, size)
+        font = pg.font.SysFont(None, the_size)
         img = font.render(text, True, color)
         scr.blit(img, (x, y))
 

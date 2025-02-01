@@ -4,19 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="02f3cb8d-08ce-4956-8228-a8154e8391b7" name="Changes" comment="Работа над кодом">
-      <change beforePath="$PROJECT_DIR$/.idea/YandexLiceumSnake.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/YandexLiceumSnake.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="02f3cb8d-08ce-4956-8228-a8154e8391b7" name="Changes" comment="Работа над кодом - новая директория - displays">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/game.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/game_records.sqlite" beforeDir="false" afterPath="$PROJECT_DIR$/game/game_records.sqlite" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/objects/apples/apple.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/objects/apples/apple.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/objects/background.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/objects/displays/background.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/objects/hud.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/objects/displays/hud.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/objects/snake/snake.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/objects/snake/snake.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/game/objects/displays/hud.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/objects/displays/hud.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game/objects/snake/snake_world.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/objects/snake/snake_world.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game/objects/wall.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/objects/displays/wall.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,11 +64,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\d9263\PycharmProjects\YandexLiceumSnakeGame\game\objects\displays" />
+      <recent name="C:\Users\d9263\PycharmProjects\YandexLiceumSnakeGame\game\objects" />
+      <recent name="C:\Users\d9263\PycharmProjects\YandexLiceumSnakeGame\game\objects\Displays" />
       <recent name="C:\Users\d9263\PycharmProjects\YandexLiceumSnakeGame\games" />
       <recent name="C:\Users\d9263\PycharmProjects\YandexLiceumSnakeGame\additionall" />
-      <recent name="C:\Users\d9263\PycharmProjects\YandexLiceumSnakeGame\objects" />
-      <recent name="C:\Users\d9263\PycharmProjects\YandexLiceumSnakeGame" />
-      <recent name="C:\Users\d9263\PycharmProjects\YandexLiceumSnakeGame\game" />
     </key>
   </component>
   <component name="RunManager">
@@ -222,7 +215,23 @@
       <option name="project" value="LOCAL" />
       <updated>1738424880967</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Работа над кодом - новая директория - displays">
+      <option name="closed" value="true" />
+      <created>1738430249067</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1738430249067</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Работа над кодом - новая директория - displays">
+      <option name="closed" value="true" />
+      <created>1738430819267</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1738430819267</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -281,6 +290,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Добавил комментария и объяснения к функциям, небольшие изменения и корректировки, код остался рабочим" />
     <MESSAGE value="Работа над кодом" />
-    <option name="LAST_COMMIT_MESSAGE" value="Работа над кодом" />
+    <MESSAGE value="Работа над кодом - новая директория - displays" />
+    <option name="LAST_COMMIT_MESSAGE" value="Работа над кодом - новая директория - displays" />
   </component>
 </project>

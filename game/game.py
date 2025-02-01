@@ -31,10 +31,12 @@ class Game:
         self.load_records()
 
     def get_time(self):
-        time = dt.now()
-        return time.strftime("%H:%M %d.%m.%Y")
+        """Получение текущего времени."""
+        the_time = dt.now()
+        return the_time.strftime("%H:%M %d.%m.%Y")
 
     def load_records(self):
+        """Загрузка игровых записей из базы данных."""
         self.singleplayer_records = []
         self.dualplayer_records = []
         cur = self.db_con.cursor()
@@ -49,6 +51,7 @@ class Game:
             self.dualplayer_records.append(elem)
 
     def log_record(self, game_type='single', score1=0, score2=0):
+        """Запись новой игры в базу данных."""
         time_now = self.get_time()
         cur = self.db_con.cursor()
         if game_type == 'single':
@@ -61,11 +64,13 @@ class Game:
         self.db_con.commit()
 
     def update_skins(self):
+        """Обновление списка скинов на основе идентификаторов скинов."""
         self.skins = []
         for i in self.skins_ids:
             self.skins.append(get_skin(int(i)))
 
     def read_settings(self):
+        """Чтение настроек скинов игроков из файла CSV."""
         self.skins_ids = []
         with open(self.csv_settings_file_path, encoding="utf8") as csvfile:
             reader = csv.reader(csvfile, delimiter='=', quotechar='"')
@@ -79,28 +84,34 @@ class Game:
         self.update_skins()
 
     def write_settings(self):
+        """Запись текущих настроек скинов в файл CSV."""
         import csv
         with open(self.csv_settings_file_path, 'w', newline='') as f:
             writer = csv.writer(f, delimiter="=")
             writer.writerows([["player1skin", self.skins_ids[0]], ["player2skin", self.skins_ids[1]]])
 
     def new_game(self, game_type='single'):  # type = single / dual
+        """Начало новой игры указанного типа."""
         self.running = True
         self.state = 'game'
         self.snake_world.new_game(game_type, skins=self.skins)
 
     def control(self):
+        """Управление игроком с помощью клавиатуры."""
         self.snake_world.control_by_keyboard()
 
     def draw_game(self):
+        """Отображение текущего состояния игры на экране."""
         self.snake_world.draw(self.scr, int(self.clock.get_fps()))
 
     def draw_multiline_text(self, text):
+        """Отображение многострочного текста на экране."""
         spl_text = text.split('\n')
         for i in range(len(spl_text)):
             self.draw_text(spl_text[i], 10, (FONT_HEIGHT_SPACE * i) + FIRST_LINE_SPACE, color='white')
 
     def draw(self):
+        """Основная функция рисования."""
         self.scr.fill(BG_COLOR)
 
         if self.state == 'game':
@@ -146,6 +157,7 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
             self.draw_multiline_text(text)
 
     def get_game_type(self):
+        """Возвращает количество игроков в зависимости от текущего активного типа игры."""
         match self.activeGameType:
             case 'single':
                 return 1
@@ -156,20 +168,24 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
                 return self.activeGameType
 
     def draw_text(self, text, x=0, y=0, color='white', size=DEFAULT_FONT_SIZE, font_type='Courier New'):
+        """Отображает текст на экране."""
         font = pg.font.SysFont(None, size)
         img = font.render(text, True, color)
         self.scr.blit(img, (x, y))
 
     def one_tick(self):
+        """Осуществляет один такт игры."""
         if self.state == 'game':
             self.snake_world.move_snakes()
             self.snake_world.check_snakes_eat_apples()
             self.snake_world.check_snakes_dead()
 
     def game_over(self):
+        """Устанавливает состояние игры оконченную."""
         self.state = 'game over'
 
     def try_edit_skin(self, skin_id, sdvig):
+        """Изменяет выбранный скин игрока."""
         if sdvig == 1:
             if self.skins_ids[skin_id] < len(SNAKE_DEFAULT_SKINS) - 1:
                 self.skins_ids[skin_id] += 1
@@ -180,6 +196,7 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
         self.write_settings()
 
     def finish_game(self):
+        """Завершает игру и сохраняет результаты в базе данных."""
         if self.activeGameType == 'single':
             self.log_record(self.activeGameType,
                             self.snake_world.snakes[0].getScore())
@@ -190,6 +207,7 @@ Github: github.com/Arlex79/YandexLiceumSnakeGame"""
         self.load_records()
 
     def mainloop(self):
+        """Основной игровой цикл."""
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
