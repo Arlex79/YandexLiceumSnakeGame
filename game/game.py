@@ -1,7 +1,7 @@
 from game.objects.snake.snake import *
 from game.additional.settings import *
 from game.objects.snake.snake_world import SnakeWorld
-from game.objects.background import Background
+from game.objects.displays.background import Background
 import csv
 import sqlite3
 from datetime import datetime as dt

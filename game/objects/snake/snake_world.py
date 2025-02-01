@@ -1,8 +1,8 @@
 from game.objects.apples.apple import Apple
 from game.objects.apples.boost_apple import BoostApple
-from game.objects.background import *
+from game.objects.displays.background import *
 from game.objects.snake.snake import *
-from game.objects.wall import *
+from game.objects.displays.wall import *
 
 
 class SnakeWorld:

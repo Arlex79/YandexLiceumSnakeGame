@@ -4,7 +4,6 @@ from random import randint
 
 class Wall:
     def __init__(self, x=None, y=None, the_size=1, color=WALL_COLOR):
-        """Инициализация стены с заданными координатами, размером и цветом."""
         if x is None:
             self.x = randint(0, MAX_SNAKE_X - 1)
         else:

@@ -1,6 +1,6 @@
 from copy import copy
 from random import randint
-from game.objects.hud import *
+from game.objects.displays.hud import *
 
 
 class SnakeSkin:
@@ -13,6 +13,7 @@ class SnakeSkin:
         return str(self.name)
 
     def get_color_for_index(self, index):
+        """Возвращает цвет для заданного индекса сегмента тела змеи."""
         assert index >= 0
         if index == 0:
             return self.head
@@ -21,6 +22,7 @@ class SnakeSkin:
             return self.body[index % len(self.body)]
 
 
+# Определение стандартных текстур змеи.
 SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient', 'green', *(
     list((0, i, 0) for i in range(70, 190, 5)))),
                        'red-orange-yellow': SnakeSkin('red gradient', 'black', *(
@@ -37,6 +39,7 @@ SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green gradient', 'green', *(
 
 
 def get_skin(name):
+    """Возвращает текстуру змеи по имени или индексу в словаре SNAKE_DEFAULT_SKINS."""
     try:
         if type(name) is int:
             skin = list(SNAKE_DEFAULT_SKINS.values())[name]
@@ -98,9 +101,11 @@ class Snake:
         self.hud = SnakeHUD()
 
     def getScore(self):
+        """Возвращает текущий счёт змеи (количество её сегментов)."""
         return len(self.body)
 
     def draw(self, scr):
+        """Рисует змею на заданной поверхности."""
         # body = self.body[::-1]
         for i in range(len(self.body)):
             snake_body_segment = self.body[i]
@@ -114,6 +119,7 @@ class Snake:
                          pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
 
     def draw_hitbox(self, scr):
+        """Рисует хитбокс для каждого сегмента тела змеи."""
         for i in range(len(self.body)):
             snake_body_segment = self.body[i]
             x = snake_body_segment.x
@@ -123,19 +129,22 @@ class Snake:
                          pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
 
     def dead(self):
+        """Устанавливает статус змеи как мёртвый и запоминает момент смерти."""
         self.alive = False
         self.dead_time = time()
 
     def move(self):
+        """Перемещает змею в текущем направлении."""
         head = self.body[0]
         del self.body[-1]
-
         self.body.insert(0, SnakeBodySegment(head.x + self.dx, head.y + self.dy))
 
     def get_move_timeout(self):
+        """Возвращает временной интервал для перемещения змеи."""
         return SNAKE_SLOWLY_MOVE_TIMEOUT
 
     def try_move_snake(self):
+        """Пытается переместить змею, если она жива и прошло достаточно времени."""
         if self.alive:
             now_ms = time()
 
@@ -144,18 +153,20 @@ class Snake:
                 self.move()
 
     def add_segment(self, count=1):
+        """Добавляет заданное количество сегментов к телу змеи."""
         try:
-            nasloyenie = self.body[0] == self.body[1]
+            layering = self.body[0] == self.body[1]
 
         except IndexError:
-            nasloyenie = False
-        if self.alive and (len(self.body) >= 2 or len(self.body) == 1) and not nasloyenie:
+            layering = False
 
+        if self.alive and (len(self.body) >= 2 or len(self.body) == 1) and not layering:
             for i in range(count):
                 snake_end = self.body[-1]
                 self.body.append(copy(snake_end))
 
     def control(self, keys):
+        """Обрабатывает управление змеёй с помощью клавиатуры."""
         if self.alive:
             new_dx, new_dy = None, None
             if keys[self.control_scheme['up']]:
