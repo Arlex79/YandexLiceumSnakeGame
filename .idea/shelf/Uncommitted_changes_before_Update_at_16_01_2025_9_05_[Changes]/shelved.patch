@@ -1,0 +1,763 @@
+Index: requirements.txt
+===================================================================
+diff --git a/requirements.txt b/requirements.txt
+deleted file mode 100644
+--- a/requirements.txt	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,1 +0,0 @@
+-pygame==2.6.1
+\ No newline at end of file
+Index: games/background.py
+===================================================================
+diff --git a/games/background.py b/games/background.py
+deleted file mode 100644
+--- a/games/background.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,27 +0,0 @@
+-from additionall.settings import *
+-import pygame as pg
+-
+-
+-class Background:
+-    def __init__(self, color='#333d48', image_filename=None):
+-        self.color = color
+-        self.image_filename = image_filename
+-
+-    def draw(self, scr):
+-        scr.fill(self.color)
+-
+-
+-class GridBackground(Background):
+-    def __init__(self, color='#333333', image_filename=None, grid_size=TILE, grid_color='black', grid_width=1):
+-        super().__init__(color, image_filename)
+-        self.grid_size = grid_size
+-        self.grid_color = grid_color
+-        self.grid_width = grid_width
+-
+-    def draw(self, scr):
+-        super().draw(scr)
+-        for x in range(0, X_SIZE, self.grid_size):
+-            pg.draw.line(scr, self.grid_color, [x, 0], [x, Y_SIZE], self.grid_width)
+-
+-        for y in range(0, Y_SIZE, self.grid_size):
+-            pg.draw.line(scr, self.grid_color, [0, y], [X_SIZE, y], self.grid_width)
+Index: games/snake.py
+===================================================================
+diff --git a/games/snake.py b/games/snake.py
+deleted file mode 100644
+--- a/games/snake.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,175 +0,0 @@
+-from additionall.settings import *
+-from copy import copy
+-from time import time
+-from random import choice, randint
+-
+-
+-class SnakeSkin:
+-    def __init__(self, head='white', *body):
+-        self.head = head
+-        self.body = body
+-
+-    def get_color_for_index(self, index):
+-        assert index >= 0
+-        if index == 0:
+-            return self.head
+-
+-        else:
+-            return self.body[index % len(self.body)]
+-
+-
+-SNAKE_DEFAULT_SKINS = {'green': SnakeSkin('green', *(
+-                               list((0, i, 0) for i in range(70, 190, 5)))),
+-                       'red-orange-yellow': SnakeSkin('black', *(
+-                               list((i, 0, 0) for i in range(70, 190, 5)) +
+-                               list((0, i, 0) for i in range(190, 70, 5)) +
+-                               list((0, 0, i) for i in range(190, 70, 5)))),
+-                       'black-white': SnakeSkin('black', *(
+-                               list((i, i, i) for i in range(70, 190, 5)) +
+-                               list((i, i, i) for i in range(190, 70, -5)))),
+-                       'yellow-cyan': SnakeSkin('red', *(
+-                               list((i, i, 0) for i in range(70, 190, 10)) +
+-                               list((0, i, i) for i in range(190, 70, -10))))
+-                       }
+-
+-
+-def get_skin(name):
+-    try:
+-        if type(name) == str:
+-            skin = SNAKE_DEFAULT_SKINS[DEFAULT_SKIN]
+-
+-        elif type(name) == int:
+-            skin = list(SNAKE_DEFAULT_SKINS.values())[name]
+-
+-    except ValueError:
+-        skin = SnakeSkin('green', 'green')
+-
+-    except IndexError:
+-        skin = list(SNAKE_DEFAULT_SKINS.values())[(len(SNAKE_DEFAULT_SKINS) - 1) % name]
+-
+-    return skin
+-
+-
+-class SnakeBodySegment:
+-    def __init__(self, x=None, y=None):
+-        if x is None:
+-            self.x = randint(0, MAX_SNAKE_X)
+-        else:
+-            self.x = x
+-
+-        if y is None:
+-            self.y = randint(0, MAX_SNAKE_Y)
+-
+-        else:
+-            self.y = y
+-
+-
+-class Snake:
+-    def __init__(self, body=None, skin=None, control_scheme=WASD_CONTROL_SCHEME):
+-        self.control_scheme = control_scheme
+-        self.alive = True
+-        if randint(0, 1):
+-            self.dx = choice((-1, 1))
+-            self.dy = 0
+-
+-        else:
+-            self.dx = 0
+-            self.dy = choice((-1, 1))
+-        self.body = []
+-        if body is None:
+-            first = SnakeBodySegment()
+-            self.body.append(first)
+-            self.body.append(SnakeBodySegment(first.x - self.dx, first.y - self.dy))
+-
+-        else:
+-            self.body = body
+-
+-        self.tick_last_time = time()
+-
+-        if skin is None:
+-            if type(DEFAULT_SKIN) == str:
+-                self.skin = SNAKE_DEFAULT_SKINS[DEFAULT_SKIN]
+-
+-            elif type(DEFAULT_SKIN) == int:
+-                self.skin = list(SNAKE_DEFAULT_SKINS.values())[DEFAULT_SKIN]
+-
+-        else:
+-            self.skin = skin
+-
+-    def draw(self, scr):
+-        # body = self.body[::-1]
+-        for i in range(len(self.body)):
+-            snake_body_segment = self.body[i]
+-            x = snake_body_segment.x
+-            y = snake_body_segment.y
+-
+-            pg.draw.rect(scr, self.skin.get_color_for_index(i),
+-                         pg.Rect(TILE * x, TILE * y, TILE, TILE))
+-
+-            pg.draw.rect(scr, self.skin.get_color_for_index(0),
+-                         pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
+-
+-    def draw_hitbox(self, scr):
+-        for i in range(len(self.body)):
+-            snake_body_segment = self.body[i]
+-            x = snake_body_segment.x
+-            y = snake_body_segment.y
+-
+-            pg.draw.rect(scr, 'green',
+-                         pg.Rect(TILE * x, TILE * y, TILE, TILE), 1)
+-
+-    def dead(self):
+-        self.alive = False
+-        self.dead_time = time()
+-
+-    def move(self):
+-        head = self.body[0]
+-        del self.body[-1]
+-
+-        self.body.insert(0, SnakeBodySegment(head.x + self.dx, head.y + self.dy))
+-
+-    def get_move_timeout(self):
+-        return SNAKE_SLOWLY_MOVE_TIMEOUT
+-
+-    def try_move_snake(self):
+-        if self.alive:
+-            now_ms = time()
+-
+-            if (now_ms - self.tick_last_time) > self.get_move_timeout():
+-                self.tick_last_time = now_ms
+-                self.move()
+-
+-    def add_segment(self, count=1):
+-        try:
+-            nasloyenie = self.body[0] == self.body[1]
+-
+-        except IndexError:
+-            nasloyenie = False
+-        if self.alive and (len(self.body) >= 2 or len(self.body) == 1) and not nasloyenie:
+-
+-            for i in range(count):
+-                snake_end = self.body[-1]
+-                self.body.append(copy(snake_end))
+-
+-    def control(self, keys):
+-        if self.alive:
+-            new_dx, new_dy = None, None
+-            if keys[self.control_scheme['up']]:
+-                new_dx = 0
+-                new_dy = -1
+-
+-            if keys[self.control_scheme['down']]:
+-                new_dx = 0
+-                new_dy = 1
+-
+-            if keys[self.control_scheme['left']]:
+-                new_dx = -1
+-                new_dy = 0
+-
+-            if keys[self.control_scheme['right']]:
+-                new_dx = 1
+-                new_dy = 0
+-
+-            if not new_dx is None and not new_dy is None and new_dx != self.dx * -1 and new_dy != self.dy * -1:
+-                self.dx = new_dx
+-                self.dy = new_dy
+Index: games/main.py
+===================================================================
+diff --git a/games/main.py b/games/main.py
+deleted file mode 100644
+--- a/games/main.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,3 +0,0 @@
+-from games.game import *
+-game = Game()
+-game.mainloop()
+Index: README.md
+===================================================================
+diff --git a/README.md b/README.md
+deleted file mode 100644
+--- a/README.md	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,14 +0,0 @@
+-# Snake game | Змейка
+-### Авторы: Староверов Данила и Фридрих Кирилл
+-## Установка
+-```
+-pip install pygame
+-```
+-## Запуск
+-```
+-python main.py
+-```
+-
+-# Скриншоты
+-![image](https://github.com/user-attachments/assets/e8052072-e06c-4d04-a55c-9f2f8cdf3ca8)
+-![image](https://github.com/user-attachments/assets/9105d488-b28e-4228-bd22-a1376586a29a)
+Index: objects/boosts.py
+===================================================================
+diff --git a/objects/boosts.py b/objects/boosts.py
+deleted file mode 100644
+--- a/objects/boosts.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,2 +0,0 @@
+-class Boost:
+-    pass
+Index: additionall/settings.py
+===================================================================
+diff --git a/additionall/settings.py b/additionall/settings.py
+deleted file mode 100644
+--- a/additionall/settings.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,35 +0,0 @@
+-from random import choice
+-import pygame as pg
+-from math import sqrt, pi
+-
+-FPS = 60
+-
+-# SCREEN SIZE
+-Y_SIZE = HEIGHT = 700
+-X_SIZE = WIDTH = 1000
+-size = [WIDTH, HEIGHT]
+-HALF_HEIGHT = HEIGHT / 2
+-HALF_WIDTH = WIDTH / 2
+-
+-
+-# COLORS
+-BG_COLOR = 'black'
+-GRID_COLOR = 'green'
+-
+-# SNAKE
+-SNAKE_DEFAULT_COLOR = 'green'
+-TILE = 20
+-SNAKE_SLOWLY_MOVE_TIMEOUT = 0.09
+-MAX_SNAKE_X = X_SIZE // TILE
+-MAX_SNAKE_Y = Y_SIZE // TILE
+-DEFAULT_SKIN = 2
+-
+-WASD_CONTROL_SCHEME = {'up': pg.K_w, 'right': pg.K_d, 'down': pg.K_s, 'left': pg.K_a}
+-ARROWS_CONTROL_SCHEME = {'up': pg.K_UP, 'right': pg.K_RIGHT, 'down': pg.K_DOWN, 'left': pg.K_LEFT}
+-
+-NUMBERS_OF_APPLES = 75
+-
+-# FONTS
+-FIRST_LINE_SPACE = 5
+-DEFAULT_FONT_SIZE = 30
+-FONT_HEIGHT_SPACE = 24
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,3 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+Index: games/game.py
+===================================================================
+diff --git a/games/game.py b/games/game.py
+deleted file mode 100644
+--- a/games/game.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,134 +0,0 @@
+-from snake import *
+-from additionall.settings import *
+-from snake_world import SnakeWorld
+-from background import Background
+-
+-
+-class Game:
+-    def __init__(self):
+-        pg.init()
+-        self.isDrawHitbox = True
+-        self.isDrawSprites = False
+-        self.scr = pg.display.set_mode(size)
+-        self.clock = pg.time.Clock()
+-        self.cheat = True
+-        self.running = True
+-        self.snake_world = SnakeWorld()
+-        self.inNenuBg = Background()
+-        self.state = 'main menu'
+-        self.activeGameType = 'single'
+-        self.skins = [get_skin(DEFAULT_SKIN), get_skin(1)]
+-
+-    def new_game(self, game_type='single'):  # type = single / duo
+-        self.running = True
+-        self.state = 'game'
+-        self.snake_world.new_game(game_type, skins=self.skins)
+-
+-    def control(self):
+-        self.snake_world.control_by_keyboard()
+-
+-    def draw_game(self):
+-        self.snake_world.draw(self.scr)
+-
+-    def draw_multiline_text(self, text):
+-        spl_text = text.split('\n')
+-        for i in range(len(spl_text)):
+-            self.draw_text(spl_text[i], 10, (FONT_HEIGHT_SPACE * i) + FIRST_LINE_SPACE, color='white')
+-
+-    def draw(self):
+-        self.scr.fill(BG_COLOR)
+-
+-        if self.state == 'game':
+-            self.draw_game()
+-
+-        if self.state == 'game over':
+-            self.inNenuBg.draw(self.scr)
+-            text = "Игра окончена!\n\nНажми Q для выхода в главное меню\nНажми пробел, чтобы играть снова"
+-            self.draw_multiline_text(text)
+-
+-        if self.state == 'main menu':
+-            self.inNenuBg.draw(self.scr)
+-            text = f"""----------< Змейка >----------\n\nНажми 1 для выбора однопользовательской игры\nНажми 2 для выбора двупользовательской игры\n
+-Нажми пробел чтобы играть в режиме {self.get_russian_game_type()}!\n\nверсия 0.1"""
+-
+-            self.draw_multiline_text(text)
+-
+-    def get_russian_game_type(self):
+-        match self.activeGameType:
+-            case 'single':
+-                return 'однопользовательская игра'
+-            case 'dual':
+-                return 'двупользовательская игра'
+-
+-            case _:
+-                return self.activeGameType
+-
+-    def draw_text(self, text, x=0, y=0, color='white', size=DEFAULT_FONT_SIZE, font_type='Courier New'):
+-        font = pg.font.SysFont(None, size)
+-        img = font.render(text, True, color)
+-        self.scr.blit(img, (x, y))
+-
+-    def one_tick(self):
+-        if self.state == 'game':
+-            self.snake_world.move_snakes()
+-            self.snake_world.check_snakes_eat_apples()
+-            self.snake_world.check_snakes_dead()
+-
+-    def game_over(self):
+-        self.state = 'game over'
+-
+-    def mainloop(self):
+-        while self.running:
+-            for event in pg.event.get():
+-                if event.type == pg.QUIT:
+-                    self.running = False
+-
+-            keys = pg.key.get_pressed()
+-            self.one_tick()
+-
+-            if self.state == 'game':
+-                if self.snake_world.one_snake_is_alive():
+-                    pos = pg.mouse.get_pos()
+-                    self.snake_world.control_by_keyboard(keys)
+-                    if keys[pg.K_r]:
+-                        self.new_game(self.activeGameType)
+-                    if keys[pg.K_y]:
+-                        for snake in self.snake_world.snakes:
+-                            snake.add_segment()
+-
+-                    if keys[pg.K_q]:
+-                        self.state = 'main menu'
+-
+-                else:
+-                    self.state = 'game over'
+-
+-            elif self.state == 'game over':
+-                if keys[pg.K_q]:
+-                    self.state = 'main menu'
+-
+-                elif keys[pg.K_SPACE]:
+-                    self.new_game(self.activeGameType)
+-
+-            elif self.state == 'main menu':
+-                if keys[pg.K_SPACE]:
+-                    self.new_game(self.activeGameType)
+-
+-                elif keys[pg.K_1]:
+-                    self.activeGameType = 'single'
+-
+-                elif keys[pg.K_2]:
+-                    self.activeGameType = 'dual'
+-
+-                elif keys[pg.K_ESCAPE]:
+-                    self.running = False
+-
+-            self.draw()
+-
+-            pg.display.flip()
+-            self.clock.tick(FPS)
+-        pg.quit()
+-
+-
+-if __name__ == '__main__':
+-    ga = Game()
+-    ga.mainloop()
+Index: additionall/hud.py
+===================================================================
+diff --git a/additionall/hud.py b/additionall/hud.py
+deleted file mode 100644
+--- a/additionall/hud.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,35 +0,0 @@
+-from time import time
+-from additionall.settings import *
+-
+-
+-class HUD:
+-    def __init__(self):
+-        self.start_time = time()
+-        self.font = pg.font.SysFont(None, DEFAULT_FONT_SIZE)
+-
+-    def draw_text(self, scr, text, font, x=0, y=0, color='white', size=DEFAULT_FONT_SIZE, font_type='Courier New'):
+-        img = font.render(text, True, color)
+-        scr.blit(img, (x, y))
+-
+-    def draw_multiline_text(self, scr, text):
+-        spl_text = text.split('\n')
+-        for i in range(len(spl_text)):
+-            self.draw_text(scr, str(spl_text[i]), self.font, 10, (FONT_HEIGHT_SPACE * i) + FIRST_LINE_SPACE,
+-                           color='white')
+-
+-    def draw(self, scr):
+-        pass
+-
+-
+-class InfoHUD(HUD):
+-    def __init__(self):
+-        super().__init__()
+-
+-    def draw(self, scr):
+-        self.draw_multiline_text(scr, '''Игра в процессе!\nНажмите Y для увеличения!''')
+-
+-
+-class SnakeHUD(HUD):
+-    def __init__(self, snake, x, y):
+-        super().__init__()
+-        pass
+Index: games/snake_world.py
+===================================================================
+diff --git a/games/snake_world.py b/games/snake_world.py
+deleted file mode 100644
+--- a/games/snake_world.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,131 +0,0 @@
+-from additionall.hud import InfoHUD
+-from objects.apple import Apple
+-from games.background import *
+-from games.snake import *
+-
+-
+-class SnakeWorld:
+-    def __init__(self):
+-        self.snakes = []  # Список для хранения объектов змей
+-        self.apples = []  # Список для хранения объектов яблок
+-        self.inGameHud = InfoHUD()  # Создаем HUD для отображения информации во время игры
+-        self.bg = GridBackground()  # Создаем объект фона игры
+-        self.game_type = None  # Задача для хранения типа игры
+-
+-        # Флаги для отрисовки хитбоксов и спрайтов
+-        self.isDrawHitbox = False
+-        self.isDrawSprites = True
+-
+-    def new_game(self, game_type='single', skins=[SnakeSkin('white', 'black', 'white'),
+-                                                  SnakeSkin('red', 'green', 'blue', 'red')]):
+-        """Метод для инициализации новой игры"""
+-        self.game_type = game_type  # Устанавливаем тип игры
+-        self.snakes = []  # Очищаем список змей
+-        self.apples = [Apple() for i in range(NUMBERS_OF_APPLES)]  # Генерируем яблоки
+-
+-        # Добавляем змеи согласно типу игры
+-        if game_type == 'single':
+-            self.snakes.append(Snake(skin=skins[0], control_scheme=WASD_CONTROL_SCHEME))  # Один игрок
+-        elif game_type == 'dual':
+-            self.snakes = [Snake(skin=skins[0], control_scheme=WASD_CONTROL_SCHEME),  # Два игрока
+-                           Snake(skin=skins[1], control_scheme=ARROWS_CONTROL_SCHEME)]
+-        else:
+-            assert False  # Если тип игры не распознан, вызываем ошибку
+-
+-    def one_snake_is_alive(self):
+-        """Метод для проверки, есть ли как минимум одна живая змея"""
+-        for snake in self.snakes:
+-            if snake.alive:  # Если змея жива
+-                return True
+-        return False  # Если все змеи мертвы
+-
+-    def add_random_coords_snake(self):
+-        """Метод для добавления случайных координат для змеи"""
+-        x = randint(0, MAX_SNAKE_X)  # Генерируем случайный X
+-        y = randint(0, MAX_SNAKE_Y)  # Генерируем случайный Y
+-
+-    def control_by_keyboard(self, keys):
+-        """Метод для управления змеями с помощью клавиатуры"""
+-        for snake in self.snakes:
+-            snake.control(keys)  # Передаем нажатые клавиши змеям
+-
+-    def move_snakes(self):
+-        """Метод для перемещения всех змей"""
+-        for snake in self.snakes:
+-            snake.move()  # Двигаем каждую змею
+-
+-    def move_snakes(self):
+-        """Метод для перемещения змей"""
+-        for snake in self.snakes:
+-            snake.try_move_snake()  # Попробовать переместить змею
+-
+-    def add_apple_to_map(self):
+-        """Метод для добавления яблока на карту, избегая координат змей"""
+-        notAllowCoords = []  # Список недопустимых координат для яблок
+-        for snake in self.snakes:
+-            for segment in snake.body:
+-                notAllowCoords.append((segment.x, segment.y))  # Добавляем координаты тела змеи
+-
+-        while True:
+-            """Генерация случайных координат для яблока"""
+-            apple_x, apple_y = randint(0, MAX_SNAKE_X), randint(0, MAX_SNAKE_Y)
+-            if (apple_x, apple_y) not in notAllowCoords:
+-                self.apples.append(Apple(apple_x, apple_y))  # Добавляем яблоко, если координаты допустимы
+-                break  # Выход из цикла
+-
+-    def check_snakes_eat_apples(self):
+-        """Метод для проверки, съели ли змеи яблоки"""
+-        add_apples_count = 0  # Счетчик добавленных яблок
+-        for snake in self.snakes:
+-            head_x, head_y = snake.body[0].x, snake.body[0].y  # Получаем координаты головы змеи
+-            for apple in self.apples:
+-                if head_x == apple.x and head_y == apple.y:  # Если змея съела яблоко
+-                    snake.add_segment(apple.size)  # Увеличиваем змею на размер яблока
+-                    self.apples.remove(apple)  # Удаляем яблоко из списка
+-                    add_apples_count += 1  # Увеличиваем счетчик
+-                    break  # Выход из внутреннего цикла, чтобы не проверять остальные яблоки
+-
+-        # Добавляем новые яблоки на карту по количеству съеденных
+-        for i in range(add_apples_count):
+-            self.add_apple_to_map()
+-
+-    def check_snakes_dead(self):
+-        """Метод для проверки, мертвы ли змеи"""
+-        deadCoords = []  # Список координат тела змей
+-        for snake in self.snakes:
+-            for segment in snake.body:
+-                deadCoords.append((segment.x, segment.y))  # Добавляем координаты тела
+-
+-        deadSnakeList = []  # Список для мертвых змей
+-        for snake in self.snakes:
+-            head = (snake.body[0].x, snake.body[0].y)  # Получаем координаты головы
+-            if head[0] < 0 or head[1] < 0 or head[0] >= MAX_SNAKE_X or head[
+-                1] >= MAX_SNAKE_Y:  # Проверяем столкновение со стенами
+-                snake.dead()
+-            if len(snake.body) > 2 and snake.alive:  # Проверяем, жива ли змея и имеет ли она более 2 сегментов
+-                numberOfColision = 0  # Счетчик столкновений
+-
+-                for coords in deadCoords:
+-                    if head == coords:  # Если голова сталкивается с телом другой змеи
+-                        numberOfColision += 1
+-
+-                if numberOfColision > 1:  # Если есть несколько пересечений
+-                    snake.dead()  # Вызываем метод, чтобы отметить змею как мертвую
+-
+-    def draw(self, scr):
+-        """Метод для отрисовки мира змей"""
+-        self.bg.draw(scr)  # Отрисовываем фон
+-        for snake in self.snakes:
+-            if self.isDrawSprites:
+-                snake.draw(scr)  # Отрисовываем каждую змею
+-            if self.isDrawHitbox:
+-                snake.draw_hitbox(scr)  # Отрисовываем хитбокс
+-
+-        for apple in self.apples:
+-            if self.isDrawSprites:
+-                apple.draw(scr)  # Отрисовываем каждое яблоко
+-            if self.isDrawHitbox:
+-                apple.draw_hitbox(scr) # Отрисовываем хитбокс
+-
+-
+-        self.inGameHud.draw(scr)  # Отрисовываем интерфейс HUD
+Index: objects/apple.py
+===================================================================
+diff --git a/objects/apple.py b/objects/apple.py
+deleted file mode 100644
+--- a/objects/apple.py	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,38 +0,0 @@
+-from additionall.settings import *
+-from random import randint
+-
+-
+-class Apple:
+-    def __init__(self, x=None, y=None, size=1, color='red'):
+-        if x is None:
+-            self.x = randint(0, MAX_SNAKE_X - 1)
+-        else:
+-            self.x = x
+-        if y is None:
+-            self.y = randint(0, MAX_SNAKE_Y - 1)
+-        else:
+-            self.y = y
+-
+-        self.size = size
+-        self.color = color
+-
+-    def draw(self, scr):
+-        """Отрисовывает яблоко на экране"""
+-        pg.draw.circle(scr, self.color, (TILE * self.x + TILE // 2, TILE * self.y + TILE // 2), TILE // 2)
+-
+-    def draw_hitbox(self, scr):
+-        """Отображает хитбокс яблока"""
+-        pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE), 1)
+-
+-    def get_position(self):
+-        """Возвращает координаты яблока"""
+-        return self.x, self.y
+-
+-    def respawn(self):
+-        """Перемещает яблоко на случайные координаты"""
+-        self.x = randint(0, MAX_SNAKE_X - 1)
+-        self.y = randint(0, MAX_SNAKE_Y - 1)
+-
+-    def is_collided(self, snake_head):
+-        """Проверяет столкновение с головой змеи"""
+-        return self.x == snake_head.x and self.y == snake_head.y
+Index: .idea/YandexLiceumSnakeGame.iml
+===================================================================
+diff --git a/.idea/YandexLiceumSnakeGame.iml b/.idea/YandexLiceumSnakeGame.iml
+deleted file mode 100644
+--- a/.idea/YandexLiceumSnakeGame.iml	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ /dev/null	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
+@@ -1,8 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<module type="PYTHON_MODULE" version="4">
+-  <component name="NewModuleRootManager">
+-    <content url="file://$MODULE_DIR$" />
+-    <orderEntry type="inheritedJdk" />
+-    <orderEntry type="sourceFolder" forTests="false" />
+-  </component>
+-</module>
+\ No newline at end of file
+Index: .idea/YandexLiceumSnake.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module type=\"PYTHON_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\">\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <excludeFolder url=\"file://$MODULE_DIR$/.venv\" />\r\n    </content>\r\n    <orderEntry type=\"jdk\" jdkName=\"Python 3.12 (YandexLiceumSnake)\" jdkType=\"Python SDK\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/YandexLiceumSnake.iml b/.idea/YandexLiceumSnake.iml
+--- a/.idea/YandexLiceumSnake.iml	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ b/.idea/YandexLiceumSnake.iml	(date 1734958796828)
+@@ -1,10 +1,8 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <module type="PYTHON_MODULE" version="4">
+   <component name="NewModuleRootManager">
+-    <content url="file://$MODULE_DIR$">
+-      <excludeFolder url="file://$MODULE_DIR$/.venv" />
+-    </content>
+-    <orderEntry type="jdk" jdkName="Python 3.12 (YandexLiceumSnake)" jdkType="Python SDK" />
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="jdk" jdkName="Python 3.12 (YandexLiceumSnake) (2)" jdkType="Python SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+   </component>
+ </module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"Black\">\r\n    <option name=\"sdkName\" value=\"Python 3.12\" />\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" project-jdk-name=\"Python 3.12\" project-jdk-type=\"Python SDK\" />\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ b/.idea/misc.xml	(date 1736403898082)
+@@ -1,7 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="Black">
+-    <option name="sdkName" value="Python 3.12" />
++    <option name="sdkName" value="Python 3.12 (YandexLiceumSnake) (2)" />
+   </component>
+-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.12" project-jdk-type="Python SDK" />
+ </project>
+\ No newline at end of file
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectModuleManager\">\r\n    <modules>\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/YandexLiceumSnakeGame.iml\" filepath=\"$PROJECT_DIR$/.idea/YandexLiceumSnakeGame.iml\" />\r\n    </modules>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+--- a/.idea/modules.xml	(revision 55588bf05d434211cfb712d495acfc15b7949d2b)
++++ b/.idea/modules.xml	(date 1734958796841)
+@@ -2,7 +2,7 @@
+ <project version="4">
+   <component name="ProjectModuleManager">
+     <modules>
+-      <module fileurl="file://$PROJECT_DIR$/.idea/YandexLiceumSnakeGame.iml" filepath="$PROJECT_DIR$/.idea/YandexLiceumSnakeGame.iml" />
++      <module fileurl="file://$PROJECT_DIR$/.idea/YandexLiceumSnake.iml" filepath="$PROJECT_DIR$/.idea/YandexLiceumSnake.iml" />
+     </modules>
+   </component>
+ </project>
+\ No newline at end of file

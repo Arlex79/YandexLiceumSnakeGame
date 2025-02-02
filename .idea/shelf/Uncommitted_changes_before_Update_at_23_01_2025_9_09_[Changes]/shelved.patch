@@ -1,0 +1,53 @@
+Index: game/additional/settings.csv
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>player1skin=0\r\nplayer2skin=2\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/additional/settings.csv b/game/additional/settings.csv
+--- a/game/additional/settings.csv	
++++ b/game/additional/settings.csv	
+@@ -1,2 +1,2 @@
+-player1skin=0
++player1skin=3
+ player2skin=2
+Index: game/objects/wall.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/game/objects/wall.py b/game/objects/wall.py
+new file mode 100644
+--- /dev/null	
++++ b/game/objects/wall.py	
+@@ -0,0 +1,29 @@
++from game.additional.settings import *
++from random import randint
++
++
++class Wall:
++    def __init__(self, x=None, y=None, size=1, color=APPLE_COLOR):
++        if x is None:
++            self.x = randint(0, MAX_SNAKE_X - 1)
++        else:
++            self.x = x
++        if y is None:
++            self.y = randint(0, MAX_SNAKE_Y - 1)
++        else:
++            self.y = y
++
++        self.size = size
++        self.color = color
++
++    def draw(self, scr):
++        pg.draw.circle(scr, self.color, (TILE * self.x + TILE // 2, TILE * self.y + TILE // 2), TILE // 2)
++
++    def draw_hitbox(self, scr):
++        pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE), 1)
++
++    def get_position(self):
++        return self.x, self.y
++
++    def is_collided(self, snake_head):
++        return self.x == snake_head.x and self.y == snake_head.y

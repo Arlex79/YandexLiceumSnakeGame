@@ -5,6 +5,7 @@ from game.objects.snake.snake import *
 from game.objects.wall import *
 
 
+
 class SnakeWorld:
     def __init__(self):
 
@@ -23,6 +24,7 @@ class SnakeWorld:
         self.apples = [Apple() for _ in range(NUMBERS_OF_APPLES)]  # Генерируем яблоки
         self.boost_apples = [BoostApple() for _ in range(NUMBERS_OF_BOOST_APPLES)]  # Генерируем яблоки
         self.walls = [Wall(randint(0, MAX_SNAKE_X), randint(0, MAX_SNAKE_Y)) for _ in range(NUMBERS_OF_WALLS)]  # Стены
+        self.particles = []  # группы частиц
 
         # Добавляем змеи согласно типу игры
         if game_type == 'single':
@@ -75,6 +77,7 @@ class SnakeWorld:
                     self.apples.append(Apple(apple_x, apple_y))  # Добавляем яблоко, если координаты допустимы
                 break  # Выход из цикла
 
+
     def check_snakes_eat_apples(self):
         """Метод для проверки, съели ли змеи яблоки"""
         add_apples_count = add_boost_apples_count = 0  # Счетчик добавленных яблок
@@ -99,6 +102,7 @@ class SnakeWorld:
             self.add_apple_to_map()
         for i in range(add_boost_apples_count):
             self.add_apple_to_map(isBoost=True)
+
     def check_snakes_dead(self):
         """Метод для проверки, мертвы ли змеи"""
 
@@ -132,6 +136,7 @@ class SnakeWorld:
                 snake.draw(scr)  # Отрисовываем каждую змею
             if self.isDrawHitbox:
                 snake.draw_hitbox(scr)  # Отрисовываем хитбокс
+
 
         # for apple in self.apples:
         #     if self.isDrawSprites:

@@ -36,11 +36,4 @@ class InfoHUD(HUD):
 {snake1text}
 {snake2text}''')
 
-class SnakeHUD(HUD):
-    def __init__(self):
-        super().__init__()
-
-    def draw(self, scr):
-        self.draw_multiline_text(scr, '''Snake hud''')
-
 

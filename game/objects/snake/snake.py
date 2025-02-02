@@ -95,7 +95,7 @@ class Snake:
 
         else:
             self.skin = skin
-        self.hud = SnakeHUD()
+
     def getScore(self):
         return len(self.body)
     def draw(self, scr):
