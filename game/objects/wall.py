@@ -17,8 +17,8 @@ class Wall:
         self.color = color
 
     def draw(self, scr):
-
         pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE))
+
     def draw_hitbox(self, scr):
         pg.draw.rect(scr, self.color, pg.Rect(TILE * self.x, TILE * self.y, TILE, TILE), 1)
 

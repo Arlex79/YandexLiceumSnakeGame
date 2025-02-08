@@ -1,8 +1,5 @@
 from random import choice
 import pygame as pg
-from math import sqrt, pi
-
-
 
 # SIZES
 Y_SIZE = HEIGHT = 700
@@ -33,8 +30,8 @@ ARROWS_CONTROL_SCHEME = {'up': pg.K_UP, 'right': pg.K_RIGHT, 'down': pg.K_DOWN, 
 
 # OTHER
 NUMBERS_OF_APPLES = 50
-NUMBERS_OF_BOOST_APPLES = 5
-NUMBERS_OF_WALLS = 25
+NUMBERS_OF_BOOST_APPLES = 25
+NUMBERS_OF_WALLS = 40
 FPS = 60
 
 # FONTS

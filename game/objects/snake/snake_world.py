@@ -5,7 +5,6 @@ from game.objects.snake.snake import *
 from game.objects.wall import *
 
 
-
 class SnakeWorld:
     def __init__(self):
 
@@ -77,27 +76,26 @@ class SnakeWorld:
                     self.apples.append(Apple(apple_x, apple_y))  # Добавляем яблоко, если координаты допустимы
                 break  # Выход из цикла
 
-
     def check_snakes_eat_apples(self):
         """Метод для проверки, съели ли змеи яблоки"""
-        add_apples_count = add_boost_apples_count = 0  # Счетчик добавленных яблок
+        add_apples_count = add_boost_apples_count = 0
         for snake in self.snakes:
-            head_x, head_y = snake.body[0].x, snake.body[0].y  # Получаем координаты головы змеи
+            head_x, head_y = snake.body[0].x, snake.body[0].y
             for apple in self.apples:
-                if head_x == apple.x and head_y == apple.y:  # Если змея съела яблоко
-                    snake.add_segment(apple.size)  # Увеличиваем змею на размер яблока
-                    self.apples.remove(apple)  # Удаляем яблоко из списка
-                    add_apples_count += 1  # Увеличиваем счетчик
-                    break  # Выход из внутреннего цикла, чтобы не проверять остальные яблоки
+                if head_x == apple.x and head_y == apple.y:
+                    snake.add_segment(apple.size)
+                    self.apples.remove(apple)
+                    add_apples_count += 1
+                    break
 
             for boost_apple in self.boost_apples:
-                if head_x == boost_apple.x and head_y == boost_apple.y:  # Если змея съела яблоко
-                    snake.add_segment(boost_apple.size)  # Увеличиваем змею на размер яблока
-                    self.boost_apples.remove(boost_apple)  # Удаляем яблоко из списка
-                    add_boost_apples_count += 1  # Увеличиваем счетчик
-                    break  # Выход из внутреннего цикла, чтобы не проверять остальные яблоки
+                if head_x == boost_apple.x and head_y == boost_apple.y:
+                    snake.add_segment(boost_apple.size)
+                    self.boost_apples.remove(boost_apple)
+                    add_boost_apples_count += 1
+                    break
 
-        # Добавляем новые яблоки на карту по количеству съеденных
+                    # Добавляем новые яблоки на карту по количеству съеденных
         for i in range(add_apples_count):
             self.add_apple_to_map()
         for i in range(add_boost_apples_count):
@@ -106,54 +104,35 @@ class SnakeWorld:
     def check_snakes_dead(self):
         """Метод для проверки, мертвы ли змеи"""
 
-        deadCoords = []  # Список координат тела змей и стен
+        deadCoords = []
         for snake in self.snakes:
             for segment in snake.body:
-                deadCoords.append((segment.x, segment.y))  # Добавляем координаты тела
+                deadCoords.append((segment.x, segment.y))
         for wall in self.walls:
             deadCoords.append((wall.x, wall.y))
 
         for snake in self.snakes:
-            head = (snake.body[0].x, snake.body[0].y)  # Получаем координаты головы
+            head = (snake.body[0].x, snake.body[0].y)
             if head[0] < 0 or head[1] < 0 or head[0] >= MAX_SNAKE_X or head[
-                1] >= MAX_SNAKE_Y:  # Проверяем столкновение со стенами
+                1] >= MAX_SNAKE_Y:
                 snake.dead()
-            if len(snake.body) > 2 and snake.alive:  # Проверяем, жива ли змея и имеет ли она более 2 сегментов
-                numberOfColision = 0  # Счетчик столкновений
+            if len(snake.body) > 2 and snake.alive:
+                numberOfColision = 0
 
                 for coords in deadCoords:
-                    if head == coords:  # Если голова сталкивается с телом другой змеи
+                    if head == coords:
                         numberOfColision += 1
 
-                if numberOfColision > 1:  # Если есть несколько пересечений
-                    snake.dead()  # Вызываем метод, чтобы отметить змею как мертвую
+                if numberOfColision > 1:
+                    snake.dead()
 
     def draw(self, scr, fps):
         """Метод для отрисовки мира змей"""
-        self.bg.draw(scr)  # Отрисовываем фон
+        self.bg.draw(scr)
         for snake in self.snakes + self.apples + self.boost_apples + self.walls:
             if self.isDrawSprites:
-                snake.draw(scr)  # Отрисовываем каждую змею
+                snake.draw(scr)
             if self.isDrawHitbox:
-                snake.draw_hitbox(scr)  # Отрисовываем хитбокс
-
-
-        # for apple in self.apples:
-        #     if self.isDrawSprites:
-        #         apple.draw(scr)  # Отрисовываем каждое яблоко
-        #     if self.isDrawHitbox:
-        #         apple.draw_hitbox(scr) # Отрисовываем хитбокс
-        #
-        # for wall in self.walls:
-        #     if self.isDrawSprites:
-        #         wall.draw(scr)
-        #     if self.isDrawHitbox:
-        #         wall.draw_hitbox(scr)
-        #
-        # for boost_apple in self.boost_apples:
-        #     if self.isDrawSprites:
-        #         boost_apple.draw(scr)
-        #     if self.isDrawHitbox:
-        #         boost_apple.draw_hitbox(scr)
+                snake.draw_hitbox(scr)
 
         self.inGameHud.draw(scr, *self.snakes, fps=fps)  # Отрисовываем интерфейс HUD
